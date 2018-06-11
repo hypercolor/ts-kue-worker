@@ -1,7 +1,7 @@
 import * as express from 'express'
 import * as kue from 'kue'
 import { Queue } from 'kue'
-import { ITaskType } from './task'
+import { ITaskType, Task } from './task'
 import { TaskRouter } from './task-router'
 
 const redisConfig = {
@@ -35,7 +35,7 @@ export class KueWorker {
     expressApp.use('/kue', kue.app)
   }
 
-  public registerTask(taskType: ITaskType<any>) {
+  public registerTask<T extends Task>(taskType: ITaskType<T>) {
     TaskRouter.registerTask(taskType)
 
     this.jobQueue.process(taskType.name, new taskType({}).maxConcurrent, (job: kue.Job, done: kue.DoneCallback) => {

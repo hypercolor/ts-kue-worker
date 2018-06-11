@@ -17,7 +17,7 @@ export interface ITaskResult {
 }
 
 export interface ITaskType<T extends Task> {
-  name: string
+  // name: string
   new (params: any): T
 }
 

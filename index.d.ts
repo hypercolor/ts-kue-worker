@@ -11,7 +11,7 @@ export class KueWorker {
     jobQueue: Queue;
     constructor();
     static launchBrowser(expressApp: express.Application): void;
-    registerTask(taskType: ITaskType<any>): void;
+    registerTask<T extends Task>(taskType: ITaskType<T>): void;
 }
 
 export interface ITaskResult {
@@ -20,7 +20,6 @@ export interface ITaskResult {
     result?: any;
 }
 export interface ITaskType<T extends Task> {
-    name: string;
     new (params: any): T;
 }
 export abstract class Task {

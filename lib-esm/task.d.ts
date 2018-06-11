@@ -5,7 +5,6 @@ export interface ITaskResult {
     result?: any;
 }
 export interface ITaskType<T extends Task> {
-    name: string;
     new (params: any): T;
 }
 export declare abstract class Task {
