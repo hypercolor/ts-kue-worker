@@ -3,5 +3,5 @@ import { ITaskType, Task } from './task';
 export declare class TaskRouter {
     private static taskTypes;
     static registerTask(taskType: ITaskType<any>): void;
-    static deserializeTask(job: kue.Job): Task | null;
+    static deserializeTask(job: kue.Job): Promise<Task>;
 }

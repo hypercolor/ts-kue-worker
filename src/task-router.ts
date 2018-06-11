@@ -8,18 +8,15 @@ export class TaskRouter {
     this.taskTypes.push(taskType)
   }
 
-  public static deserializeTask(job: kue.Job): Task | null {
-    let task: Task | null = null
-
+  public static deserializeTask(job: kue.Job): Promise<Task> {
     if (job.type) {
       for (const taskType of this.taskTypes) {
         if (job.type === taskType.name) {
-          task = new taskType(job.data)
-          break
+          return taskType.build(job.data)
         }
       }
     }
 
-    return task
+    return Promise.reject(new Error('Couldnt match task type: ' + job.type))
   }
 }

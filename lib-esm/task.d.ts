@@ -5,14 +5,15 @@ export interface ITaskResult {
     result?: any;
 }
 export interface ITaskType<T extends Task> {
-    new (params: any): T;
+    name: string;
+    maxConcurrent: number;
+    build(params: any): Promise<T>;
 }
 export declare abstract class Task {
     valid: boolean;
     protected job?: Job;
     abstract readonly maxConcurrent: number;
     abstract workerRun(): Promise<ITaskResult>;
-    protected abstract readonly params: any;
+    abstract serialize(): any;
     submit(): Promise<{}>;
-    serialize(): any;
 }

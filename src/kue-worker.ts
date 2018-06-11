@@ -38,44 +38,40 @@ export class KueWorker {
   public registerTask<T extends Task>(taskType: ITaskType<T>) {
     TaskRouter.registerTask(taskType)
 
-    this.jobQueue.process(taskType.name, new taskType({}).maxConcurrent, (job: kue.Job, done: kue.DoneCallback) => {
-      const task = TaskRouter.deserializeTask(job)
+    this.jobQueue.process(taskType.name, taskType.maxConcurrent, (job: kue.Job, done: kue.DoneCallback) => {
       const start = new Date().getTime()
 
-      if (task) {
-        // console.log('Deserialized task: ' + JSON.stringify(task.serialize()) + ' from job: ' + JSON.stringify(job));
+      let task: Task
 
-        task
-          .workerRun()
-          .then(result => {
-            if (result.error) {
-              console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ' + JSON.stringify(result.error))
-              job.remove()
-              done(result.error)
-            } else {
-              console.log(
-                'Processed job ' +
-                  task.constructor.name +
-                  ' (' +
-                  job.id +
-                  ') in ' +
-                  (new Date().getTime() - start) +
-                  ' ms.'
-              )
-              job.remove()
-              done()
-            }
-          })
-          .catch(err => {
-            console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ', err)
+      TaskRouter.deserializeTask(job)
+        .then(t => {
+          task = t
+          return task.workerRun()
+        })
+        .then(result => {
+          if (result.error) {
+            console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ' + JSON.stringify(result.error))
             job.remove()
-            done(err)
-          })
-      } else {
-        console.log("Warning, couldn't deserialize task: " + JSON.stringify(job))
-        job.remove()
-        done(new Error("Couldn't deserialize task."))
-      }
+            done(result.error)
+          } else {
+            console.log(
+              'Processed job ' +
+                task.constructor.name +
+                ' (' +
+                job.id +
+                ') in ' +
+                (new Date().getTime() - start) +
+                ' ms.'
+            )
+            job.remove()
+            done()
+          }
+        })
+        .catch(err => {
+          console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ', err)
+          job.remove()
+          done(err)
+        })
     })
   }
 }

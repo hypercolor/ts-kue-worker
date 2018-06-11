@@ -9,7 +9,13 @@ const redisConfig = {
 export class Task {
     constructor() {
         this.valid = false;
+        // public serialize() {
+        //   const json = this.params
+        //   json.type = this.constructor.name
+        //   return json
+        // }
     }
+    // protected abstract get params(): any
     submit() {
         if (this.valid) {
             // console.log('Submitting valid task: ' + JSON.stringify(task.serialize()));
@@ -40,11 +46,6 @@ export class Task {
             console.log('Warning, tried to submit an invalid task: ' + JSON.stringify(this));
             return Promise.reject({ code: 500, error: 'Invalid task: ' + JSON.stringify(this) });
         }
-    }
-    serialize() {
-        const json = this.params;
-        json.type = this.constructor.name;
-        return json;
     }
 }
 //# sourceMappingURL=task.js.map

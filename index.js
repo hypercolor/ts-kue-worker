@@ -124,7 +124,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var redisConfig = {
-    redis: process.env.REDIS_URL,
+    redis: process.env.REDIS_URL
 };
 var KueWorker = /** @class */ (function () {
     function KueWorker() {
@@ -134,53 +134,48 @@ var KueWorker = /** @class */ (function () {
         // this.jobQueue.on('ready', function(){
         //   console.info('Queue is ready!');
         // });
-        this.jobQueue.on('error', function (err) {
-            console.error('There was an error in the main queue!');
+        this.jobQueue.on("error", function (err) {
+            console.error("There was an error in the main queue!");
             console.error(err);
             console.error(err.stack);
         });
     }
     KueWorker.launchBrowser = function (expressApp) {
-        expressApp.use('/kue', kue__WEBPACK_IMPORTED_MODULE_0__["app"]);
+        expressApp.use("/kue", kue__WEBPACK_IMPORTED_MODULE_0__["app"]);
     };
     KueWorker.prototype.registerTask = function (taskType) {
         _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].registerTask(taskType);
-        this.jobQueue.process(taskType.name, new taskType({}).maxConcurrent, function (job, done) {
-            var task = _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].deserializeTask(job);
+        this.jobQueue.process(taskType.name, taskType.maxConcurrent, function (job, done) {
             var start = new Date().getTime();
-            if (task) {
-                // console.log('Deserialized task: ' + JSON.stringify(task.serialize()) + ' from job: ' + JSON.stringify(job));
-                task
-                    .workerRun()
-                    .then(function (result) {
-                    if (result.error) {
-                        console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ' + JSON.stringify(result.error));
-                        job.remove();
-                        done(result.error);
-                    }
-                    else {
-                        console.log('Processed job ' +
-                            task.constructor.name +
-                            ' (' +
-                            job.id +
-                            ') in ' +
-                            (new Date().getTime() - start) +
-                            ' ms.');
-                        job.remove();
-                        done();
-                    }
-                })
-                    .catch(function (err) {
-                    console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ', err);
+            var task;
+            _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].deserializeTask(job)
+                .then(function (t) {
+                task = t;
+                return task.workerRun();
+            })
+                .then(function (result) {
+                if (result.error) {
+                    console.log("Job " + task.constructor.name + " (" + job.id + ") error: " + JSON.stringify(result.error));
                     job.remove();
-                    done(err);
-                });
-            }
-            else {
-                console.log("Warning, couldn't deserialize task: " + JSON.stringify(job));
+                    done(result.error);
+                }
+                else {
+                    console.log("Processed job " +
+                        task.constructor.name +
+                        " (" +
+                        job.id +
+                        ") in " +
+                        (new Date().getTime() - start) +
+                        " ms.");
+                    job.remove();
+                    done();
+                }
+            })
+                .catch(function (err) {
+                console.log("Job " + task.constructor.name + " (" + job.id + ") error: ", err);
                 job.remove();
-                done(new Error("Couldn't deserialize task."));
-            }
+                done(err);
+            });
         });
     };
     return KueWorker;
@@ -207,17 +202,15 @@ var TaskRouter = /** @class */ (function () {
         this.taskTypes.push(taskType);
     };
     TaskRouter.deserializeTask = function (job) {
-        var task = null;
         if (job.type) {
             for (var _i = 0, _a = this.taskTypes; _i < _a.length; _i++) {
                 var taskType = _a[_i];
                 if (job.type === taskType.name) {
-                    task = new taskType(job.data);
-                    break;
+                    return taskType.build(job.data);
                 }
             }
         }
-        return task;
+        return Promise.reject(new Error('Couldnt match task type: ' + job.type));
     };
     TaskRouter.taskTypes = [];
     return TaskRouter;
@@ -250,7 +243,13 @@ var redisConfig = {
 var Task = /** @class */ (function () {
     function Task() {
         this.valid = false;
+        // public serialize() {
+        //   const json = this.params
+        //   json.type = this.constructor.name
+        //   return json
+        // }
     }
+    // protected abstract get params(): any
     Task.prototype.submit = function () {
         var _this = this;
         if (this.valid) {
@@ -282,11 +281,6 @@ var Task = /** @class */ (function () {
             console.log('Warning, tried to submit an invalid task: ' + JSON.stringify(this));
             return Promise.reject({ code: 500, error: 'Invalid task: ' + JSON.stringify(this) });
         }
-    };
-    Task.prototype.serialize = function () {
-        var json = this.params;
-        json.type = this.constructor.name;
-        return json;
     };
     return Task;
 }());

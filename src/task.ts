@@ -17,8 +17,9 @@ export interface ITaskResult {
 }
 
 export interface ITaskType<T extends Task> {
-  // name: string
-  new (params: any): T
+  name: string
+  maxConcurrent: number
+  build(params: any): Promise<T>
 }
 
 export abstract class Task {
@@ -30,7 +31,9 @@ export abstract class Task {
 
   public abstract workerRun(): Promise<ITaskResult>
 
-  protected abstract get params(): any
+  public abstract serialize(): any
+
+  // protected abstract get params(): any
 
   public submit() {
     if (this.valid) {
@@ -64,9 +67,9 @@ export abstract class Task {
     }
   }
 
-  public serialize() {
-    const json = this.params
-    json.type = this.constructor.name
-    return json
-  }
+  // public serialize() {
+  //   const json = this.params
+  //   json.type = this.constructor.name
+  //   return json
+  // }
 }

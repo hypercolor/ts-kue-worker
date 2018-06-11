@@ -3,16 +3,14 @@ export class TaskRouter {
         this.taskTypes.push(taskType);
     }
     static deserializeTask(job) {
-        let task = null;
         if (job.type) {
             for (const taskType of this.taskTypes) {
                 if (job.type === taskType.name) {
-                    task = new taskType(job.data);
-                    break;
+                    return taskType.build(job.data);
                 }
             }
         }
-        return task;
+        return Promise.reject(new Error('Couldnt match task type: ' + job.type));
     }
 }
 TaskRouter.taskTypes = [];
