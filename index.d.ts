@@ -27,7 +27,6 @@ export interface ITaskType<T extends Task> {
 export abstract class Task {
     valid: boolean;
     protected job?: Job;
-    abstract readonly maxConcurrent: number;
     abstract workerRun(): Promise<ITaskResult>;
     protected abstract readonly serializedParams: any;
     submit(): Promise<{}>;

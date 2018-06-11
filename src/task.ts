@@ -27,8 +27,6 @@ export abstract class Task {
 
   protected job?: Job
 
-  public abstract get maxConcurrent(): number
-
   public abstract workerRun(): Promise<ITaskResult>
 
   protected abstract get serializedParams(): any
