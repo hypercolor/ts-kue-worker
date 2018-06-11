@@ -124,7 +124,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 var redisConfig = {
-    redis: process.env.REDIS_URL
+    redis: process.env.REDIS_URL,
 };
 var KueWorker = /** @class */ (function () {
     function KueWorker() {
@@ -134,14 +134,14 @@ var KueWorker = /** @class */ (function () {
         // this.jobQueue.on('ready', function(){
         //   console.info('Queue is ready!');
         // });
-        this.jobQueue.on("error", function (err) {
-            console.error("There was an error in the main queue!");
+        this.jobQueue.on('error', function (err) {
+            console.error('There was an error in the main queue!');
             console.error(err);
             console.error(err.stack);
         });
     }
     KueWorker.launchBrowser = function (expressApp) {
-        expressApp.use("/kue", kue__WEBPACK_IMPORTED_MODULE_0__["app"]);
+        expressApp.use('/kue', kue__WEBPACK_IMPORTED_MODULE_0__["app"]);
     };
     KueWorker.prototype.registerTask = function (taskType) {
         _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].registerTask(taskType);
@@ -155,24 +155,24 @@ var KueWorker = /** @class */ (function () {
             })
                 .then(function (result) {
                 if (result.error) {
-                    console.log("Job " + task.constructor.name + " (" + job.id + ") error: " + JSON.stringify(result.error));
+                    console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ' + JSON.stringify(result.error));
                     job.remove();
                     done(result.error);
                 }
                 else {
-                    console.log("Processed job " +
+                    console.log('Processed job ' +
                         task.constructor.name +
-                        " (" +
+                        ' (' +
                         job.id +
-                        ") in " +
+                        ') in ' +
                         (new Date().getTime() - start) +
-                        " ms.");
+                        ' ms.');
                     job.remove();
                     done();
                 }
             })
                 .catch(function (err) {
-                console.log("Job " + task.constructor.name + " (" + job.id + ") error: ", err);
+                console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ', err);
                 job.remove();
                 done(err);
             });
@@ -243,13 +243,7 @@ var redisConfig = {
 var Task = /** @class */ (function () {
     function Task() {
         this.valid = false;
-        // public serialize() {
-        //   const json = this.params
-        //   json.type = this.constructor.name
-        //   return json
-        // }
     }
-    // protected abstract get params(): any
     Task.prototype.submit = function () {
         var _this = this;
         if (this.valid) {
@@ -281,6 +275,11 @@ var Task = /** @class */ (function () {
             console.log('Warning, tried to submit an invalid task: ' + JSON.stringify(this));
             return Promise.reject({ code: 500, error: 'Invalid task: ' + JSON.stringify(this) });
         }
+    };
+    Task.prototype.serialize = function () {
+        var json = this.serializedParams;
+        json.type = this.constructor.name;
+        return json;
     };
     return Task;
 }());

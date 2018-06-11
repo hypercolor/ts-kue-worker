@@ -3,8 +3,8 @@
 //   ../express
 //   ../kue
 
-import * as express from "express";
-import { Queue } from "kue";
+import * as express from 'express';
+import { Queue } from 'kue';
 import { Job } from 'kue';
 
 export class KueWorker {
@@ -22,14 +22,15 @@ export interface ITaskResult {
 export interface ITaskType<T extends Task> {
     name: string;
     maxConcurrent: number;
-    build(params: any): Promise<T>;
+    build(serializedParams: any): Promise<T>;
 }
 export abstract class Task {
     valid: boolean;
     protected job?: Job;
     abstract readonly maxConcurrent: number;
     abstract workerRun(): Promise<ITaskResult>;
-    abstract serialize(): any;
+    protected abstract readonly serializedParams: any;
     submit(): Promise<{}>;
+    serialize(): any;
 }
 
