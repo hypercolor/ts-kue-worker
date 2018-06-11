@@ -1,2 +1,3 @@
-export { Controller } from './src/Controller'
-export {ControllerConfig} from './src/ControllerConfig'
+
+export {Worker} from './src/worker';
+export {Task} from './src/task';
