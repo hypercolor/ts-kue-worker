@@ -1,3 +1,3 @@
-# ts-express-controller
+# ts-kue-worker
 
-Helper for creating consistent JSON APIs in express.
+Worker stack based on Kue
