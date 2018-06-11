@@ -1,3 +1,3 @@
 
-export {Worker} from './src/worker';
+export {KueWorker} from './src/kue-worker';
 export {Task} from './src/task';

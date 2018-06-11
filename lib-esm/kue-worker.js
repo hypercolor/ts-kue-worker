@@ -1,9 +1,9 @@
 import * as kue from 'kue';
 import { TaskRouter } from './task-router';
 const redisConfig = {
-    redis: process.env.REDIS_URL
+    redis: process.env.REDIS_URL,
 };
-export class Worker {
+export class KueWorker {
     constructor() {
         // console.log('Setting up Kue...');
         this.jobQueue = kue.createQueue(redisConfig);
@@ -27,7 +27,8 @@ export class Worker {
             const start = new Date().getTime();
             if (task) {
                 // console.log('Deserialized task: ' + JSON.stringify(task.serialize()) + ' from job: ' + JSON.stringify(job));
-                task.workerRun()
+                task
+                    .workerRun()
                     .then(result => {
                     if (result.error) {
                         console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ' + JSON.stringify(result.error));
@@ -35,7 +36,13 @@ export class Worker {
                         done(result.error);
                     }
                     else {
-                        console.log('Processed job ' + task.constructor.name + ' (' + job.id + ') in ' + (new Date().getTime() - start) + ' ms.');
+                        console.log('Processed job ' +
+                            task.constructor.name +
+                            ' (' +
+                            job.id +
+                            ') in ' +
+                            (new Date().getTime() - start) +
+                            ' ms.');
                         job.remove();
                         done();
                     }
@@ -47,11 +54,11 @@ export class Worker {
                 });
             }
             else {
-                console.log('Warning, couldn\'t deserialize task: ' + JSON.stringify(job));
+                console.log("Warning, couldn't deserialize task: " + JSON.stringify(job));
                 job.remove();
-                done(new Error('Couldn\'t deserialize task.'));
+                done(new Error("Couldn't deserialize task."));
             }
         });
     }
 }
-//# sourceMappingURL=worker.js.map
+//# sourceMappingURL=kue-worker.js.map

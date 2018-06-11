@@ -8,7 +8,7 @@ const redisConfig = {
   redis: process.env.REDIS_URL,
 }
 
-export class Worker {
+export class KueWorker {
   // private static sharedInstance: Worker = new Worker();
 
   public jobQueue: Queue

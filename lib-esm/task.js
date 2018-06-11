@@ -4,7 +4,7 @@ import * as kue from 'kue';
 // }
 // TODO: CONVERT THIS TO CONFIG
 const redisConfig = {
-    redis: process.env.REDIS_URL
+    redis: process.env.REDIS_URL,
 };
 export class Task {
     constructor() {
@@ -17,7 +17,8 @@ export class Task {
             const jobQueue = kue.createQueue(redisConfig);
             return new Promise((resolve, reject) => {
                 // this.sharedInstance.jobQueue = kue.createQueue();
-                const job = jobQueue.create(this.constructor.name, this.serialize())
+                const job = jobQueue
+                    .create(this.constructor.name, this.serialize())
                     .priority('normal')
                     .attempts(1)
                     .backoff(true)

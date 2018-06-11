@@ -91,18 +91,100 @@ return /******/ (function(modules) { // webpackBootstrap
 /*!******************!*\
   !*** ./index.ts ***!
   \******************/
-/*! exports provided: Worker, Task */
+/*! exports provided: KueWorker, Task */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _src_worker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/worker */ "./src/worker.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Worker", function() { return _src_worker__WEBPACK_IMPORTED_MODULE_0__["Worker"]; });
+/* harmony import */ var _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/kue-worker */ "./src/kue-worker.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "KueWorker", function() { return _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__["KueWorker"]; });
 
 /* harmony import */ var _src_task__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/task */ "./src/task.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Task", function() { return _src_task__WEBPACK_IMPORTED_MODULE_1__["Task"]; });
 
 
+
+
+
+/***/ }),
+
+/***/ "./src/kue-worker.ts":
+/*!***************************!*\
+  !*** ./src/kue-worker.ts ***!
+  \***************************/
+/*! exports provided: KueWorker */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "KueWorker", function() { return KueWorker; });
+/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kue */ "kue");
+/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kue__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _task_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./task-router */ "./src/task-router.ts");
+
+
+var redisConfig = {
+    redis: process.env.REDIS_URL,
+};
+var KueWorker = /** @class */ (function () {
+    function KueWorker() {
+        // console.log('Setting up Kue...');
+        this.jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](redisConfig);
+        this.jobQueue.watchStuckJobs(1000 * 10);
+        // this.jobQueue.on('ready', function(){
+        //   console.info('Queue is ready!');
+        // });
+        this.jobQueue.on('error', function (err) {
+            console.error('There was an error in the main queue!');
+            console.error(err);
+            console.error(err.stack);
+        });
+    }
+    KueWorker.launchBrowser = function (expressApp) {
+        expressApp.use('/kue', kue__WEBPACK_IMPORTED_MODULE_0__["app"]);
+    };
+    KueWorker.prototype.registerTask = function (taskType) {
+        _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].registerTask(taskType);
+        this.jobQueue.process(taskType.name, new taskType({}).maxConcurrent, function (job, done) {
+            var task = _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].deserializeTask(job);
+            var start = new Date().getTime();
+            if (task) {
+                // console.log('Deserialized task: ' + JSON.stringify(task.serialize()) + ' from job: ' + JSON.stringify(job));
+                task
+                    .workerRun()
+                    .then(function (result) {
+                    if (result.error) {
+                        console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ' + JSON.stringify(result.error));
+                        job.remove();
+                        done(result.error);
+                    }
+                    else {
+                        console.log('Processed job ' +
+                            task.constructor.name +
+                            ' (' +
+                            job.id +
+                            ') in ' +
+                            (new Date().getTime() - start) +
+                            ' ms.');
+                        job.remove();
+                        done();
+                    }
+                })
+                    .catch(function (err) {
+                    console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ', err);
+                    job.remove();
+                    done(err);
+                });
+            }
+            else {
+                console.log("Warning, couldn't deserialize task: " + JSON.stringify(job));
+                job.remove();
+                done(new Error("Couldn't deserialize task."));
+            }
+        });
+    };
+    return KueWorker;
+}());
 
 
 
@@ -163,7 +245,7 @@ __webpack_require__.r(__webpack_exports__);
 // }
 // TODO: CONVERT THIS TO CONFIG
 var redisConfig = {
-    redis: process.env.REDIS_URL
+    redis: process.env.REDIS_URL,
 };
 var Task = /** @class */ (function () {
     function Task() {
@@ -177,7 +259,8 @@ var Task = /** @class */ (function () {
             var jobQueue_1 = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](redisConfig);
             return new Promise(function (resolve, reject) {
                 // this.sharedInstance.jobQueue = kue.createQueue();
-                var job = jobQueue_1.create(_this.constructor.name, _this.serialize())
+                var job = jobQueue_1
+                    .create(_this.constructor.name, _this.serialize())
                     .priority('normal')
                     .attempts(1)
                     .backoff(true)
@@ -206,81 +289,6 @@ var Task = /** @class */ (function () {
         return json;
     };
     return Task;
-}());
-
-
-
-/***/ }),
-
-/***/ "./src/worker.ts":
-/*!***********************!*\
-  !*** ./src/worker.ts ***!
-  \***********************/
-/*! exports provided: Worker */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Worker", function() { return Worker; });
-/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kue */ "kue");
-/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kue__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _task_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./task-router */ "./src/task-router.ts");
-
-
-var redisConfig = {
-    redis: process.env.REDIS_URL
-};
-var Worker = /** @class */ (function () {
-    function Worker() {
-        // console.log('Setting up Kue...');
-        this.jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](redisConfig);
-        this.jobQueue.watchStuckJobs(1000 * 10);
-        // this.jobQueue.on('ready', function(){
-        //   console.info('Queue is ready!');
-        // });
-        this.jobQueue.on('error', function (err) {
-            console.error('There was an error in the main queue!');
-            console.error(err);
-            console.error(err.stack);
-        });
-    }
-    Worker.launchBrowser = function (expressApp) {
-        expressApp.use('/kue', kue__WEBPACK_IMPORTED_MODULE_0__["app"]);
-    };
-    Worker.prototype.registerTask = function (taskType) {
-        _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].registerTask(taskType);
-        this.jobQueue.process(taskType.name, new taskType({}).maxConcurrent, function (job, done) {
-            var task = _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].deserializeTask(job);
-            var start = new Date().getTime();
-            if (task) {
-                // console.log('Deserialized task: ' + JSON.stringify(task.serialize()) + ' from job: ' + JSON.stringify(job));
-                task.workerRun()
-                    .then(function (result) {
-                    if (result.error) {
-                        console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ' + JSON.stringify(result.error));
-                        job.remove();
-                        done(result.error);
-                    }
-                    else {
-                        console.log('Processed job ' + task.constructor.name + ' (' + job.id + ') in ' + (new Date().getTime() - start) + ' ms.');
-                        job.remove();
-                        done();
-                    }
-                })
-                    .catch(function (err) {
-                    console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ', err);
-                    job.remove();
-                    done(err);
-                });
-            }
-            else {
-                console.log('Warning, couldn\'t deserialize task: ' + JSON.stringify(job));
-                job.remove();
-                done(new Error('Couldn\'t deserialize task.'));
-            }
-        });
-    };
-    return Worker;
 }());
 
 

@@ -7,7 +7,7 @@ import * as express from 'express';
 import { Queue } from 'kue';
 import { Job } from 'kue';
 
-export class Worker {
+export class KueWorker {
     jobQueue: Queue;
     constructor();
     static launchBrowser(expressApp: express.Application): void;
@@ -17,7 +17,7 @@ export class Worker {
 export interface ITaskResult {
     success: boolean;
     error?: any;
-    result: any;
+    result?: any;
 }
 export interface ITaskType<T extends Task> {
     name: string;

@@ -13,7 +13,7 @@ const redisConfig = {
 export interface ITaskResult {
   success: boolean
   error?: any
-  result: any
+  result?: any
 }
 
 export interface ITaskType<T extends Task> {
