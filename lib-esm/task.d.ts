@@ -10,7 +10,6 @@ export interface ITaskType<T extends Task> {
     build(serializedParams: any): Promise<T>;
 }
 export declare abstract class Task {
-    valid: boolean;
     protected job?: Job;
     abstract workerRun(): Promise<ITaskResult>;
     protected abstract readonly serializedParams: any;

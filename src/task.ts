@@ -23,8 +23,6 @@ export interface ITaskType<T extends Task> {
 }
 
 export abstract class Task {
-  public valid = false
-
   protected job?: Job
 
   public abstract workerRun(): Promise<ITaskResult>
@@ -32,35 +30,27 @@ export abstract class Task {
   protected abstract get serializedParams(): any
 
   public submit() {
-    if (this.valid) {
-      // console.log('Submitting valid task: ' + JSON.stringify(task.serialize()));
+    const jobQueue = kue.createQueue(redisConfig)
 
-      // console.log('Connecting to redis with config: ' + JSON.stringify(redisConfig));
-      const jobQueue = kue.createQueue(redisConfig)
-
-      return new Promise((resolve, reject) => {
-        // this.sharedInstance.jobQueue = kue.createQueue();
-        const job = jobQueue
-          .create(this.constructor.name, this.serialize())
-          .priority('normal')
-          .attempts(1)
-          .backoff(true)
-          .removeOnComplete(false)
-          .delay(0)
-          .save((err: Error) => {
-            if (err) {
-              console.log('Error submitting task: ' + JSON.stringify(err))
-              reject(err)
-            } else {
-              // console.log('Task submitted.');
-              resolve(job)
-            }
-          })
-      })
-    } else {
-      console.log('Warning, tried to submit an invalid task: ' + JSON.stringify(this))
-      return Promise.reject({ code: 500, error: 'Invalid task: ' + JSON.stringify(this) })
-    }
+    return new Promise((resolve, reject) => {
+      // this.sharedInstance.jobQueue = kue.createQueue();
+      const job = jobQueue
+        .create(this.constructor.name, this.serialize())
+        .priority('normal')
+        .attempts(1)
+        .backoff(true)
+        .removeOnComplete(false)
+        .delay(0)
+        .save((err: Error) => {
+          if (err) {
+            console.log('Error submitting task: ' + JSON.stringify(err))
+            reject(err)
+          } else {
+            // console.log('Task submitted.');
+            resolve(job)
+          }
+        })
+    })
   }
 
   public serialize() {
