@@ -1,4 +1,4 @@
-import * as kue from "kue";
+import * as kue from 'kue';
 // TODO: CONVERT THIS TO CONFIG
 const redisConfig = {
     redis: process.env.REDIS_URL,

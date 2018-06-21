@@ -29,3 +29,9 @@ export abstract class TaskRunner {
     abstract run(): Promise<ITaskResult>;
 }
 
+export abstract class TaskLauncher {
+    protected abstract readonly serializedParams: any;
+    serialize(): any;
+    submit(): Promise<{}>;
+}
+
