@@ -1,5 +1,5 @@
 export declare abstract class TaskLauncher {
-    protected abstract readonly serializedParams: any;
+    protected abstract readonly params: any;
     serialize(): any;
     submit(): Promise<{}>;
 }

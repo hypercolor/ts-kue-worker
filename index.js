@@ -91,13 +91,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /*!******************!*\
   !*** ./index.ts ***!
   \******************/
-/*! exports provided: KueWorker, TaskRunner, TaskLauncher */
+/*! exports provided: KueWorker, KueWorkerConfig, TaskRunner, TaskLauncher */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/kue-worker */ "./src/kue-worker.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "KueWorker", function() { return _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__["KueWorker"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "KueWorkerConfig", function() { return _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__["KueWorkerConfig"]; });
 
 /* harmony import */ var _src_task_runner__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/task-runner */ "./src/task-runner.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TaskRunner", function() { return _src_task_runner__WEBPACK_IMPORTED_MODULE_1__["TaskRunner"]; });
@@ -116,24 +118,31 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************!*\
   !*** ./src/kue-worker.ts ***!
   \***************************/
-/*! exports provided: KueWorker */
+/*! exports provided: KueWorkerConfig, KueWorker */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "KueWorkerConfig", function() { return KueWorkerConfig; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "KueWorker", function() { return KueWorker; });
 /* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kue */ "kue");
 /* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kue__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _task_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./task-router */ "./src/task-router.ts");
 
 
-var redisConfig = {
-    redis: process.env.REDIS_URL,
-};
+var KueWorkerConfig = /** @class */ (function () {
+    function KueWorkerConfig() {
+    }
+    KueWorkerConfig.redisParams = {
+        redis: 'redis://localhost:6379'
+    };
+    return KueWorkerConfig;
+}());
+
 var KueWorker = /** @class */ (function () {
     function KueWorker() {
         // console.log('Setting up Kue...');
-        this.jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](redisConfig);
+        this.jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](KueWorkerConfig.redisParams);
         this.jobQueue.watchStuckJobs(1000 * 10);
         // this.jobQueue.on('ready', function(){
         //   console.info('Queue is ready!');
@@ -144,7 +153,7 @@ var KueWorker = /** @class */ (function () {
             console.error(err.stack);
         });
     }
-    KueWorker.launchBrowser = function (expressApp) {
+    KueWorker.mountBrowserApp = function (expressApp) {
         expressApp.use('/kue', kue__WEBPACK_IMPORTED_MODULE_0__["app"]);
     };
     KueWorker.prototype.registerTask = function (taskType) {
@@ -201,22 +210,20 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TaskLauncher", function() { return TaskLauncher; });
 /* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kue */ "kue");
 /* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kue__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _kue_worker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./kue-worker */ "./src/kue-worker.ts");
 
-// TODO: CONVERT THIS TO CONFIG
-var redisConfig = {
-    redis: process.env.REDIS_URL,
-};
+
 var TaskLauncher = /** @class */ (function () {
     function TaskLauncher() {
     }
     TaskLauncher.prototype.serialize = function () {
-        var json = this.serializedParams;
+        var json = this.params;
         json.type = this.constructor.name;
         return json;
     };
     TaskLauncher.prototype.submit = function () {
         var _this = this;
-        var jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](redisConfig);
+        var jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](_kue_worker__WEBPACK_IMPORTED_MODULE_1__["KueWorkerConfig"].redisParams);
         return new Promise(function (resolve, reject) {
             // this.sharedInstance.jobQueue = kue.createQueue();
             var job = jobQueue

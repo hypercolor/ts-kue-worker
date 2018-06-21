@@ -7,10 +7,16 @@ import * as express from 'express';
 import { Queue } from 'kue';
 import { Job } from 'kue';
 
+export interface IRedisConfig {
+    redis: string;
+}
+export class KueWorkerConfig {
+    static redisParams: IRedisConfig;
+}
 export class KueWorker {
     jobQueue: Queue;
     constructor();
-    static launchBrowser(expressApp: express.Application): void;
+    static mountBrowserApp(expressApp: express.Application): void;
     registerTask<T extends TaskRunner>(taskType: ITaskType<T>): void;
 }
 
@@ -30,7 +36,7 @@ export abstract class TaskRunner {
 }
 
 export abstract class TaskLauncher {
-    protected abstract readonly serializedParams: any;
+    protected abstract readonly params: any;
     serialize(): any;
     submit(): Promise<{}>;
 }

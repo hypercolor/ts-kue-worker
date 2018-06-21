@@ -1,12 +1,14 @@
 import * as kue from 'kue';
 import { TaskRouter } from './task-router';
-const redisConfig = {
-    redis: process.env.REDIS_URL,
+export class KueWorkerConfig {
+}
+KueWorkerConfig.redisParams = {
+    redis: 'redis://localhost:6379'
 };
 export class KueWorker {
     constructor() {
         // console.log('Setting up Kue...');
-        this.jobQueue = kue.createQueue(redisConfig);
+        this.jobQueue = kue.createQueue(KueWorkerConfig.redisParams);
         this.jobQueue.watchStuckJobs(1000 * 10);
         // this.jobQueue.on('ready', function(){
         //   console.info('Queue is ready!');
@@ -17,7 +19,7 @@ export class KueWorker {
             console.error(err.stack);
         });
     }
-    static launchBrowser(expressApp) {
+    static mountBrowserApp(expressApp) {
         expressApp.use('/kue', kue.app);
     }
     registerTask(taskType) {
