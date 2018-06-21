@@ -28,7 +28,7 @@ export class KueWorker {
             TaskRouter.deserializeTask(job)
                 .then(t => {
                 task = t;
-                return task.workerRun();
+                return task.run();
             })
                 .then(result => {
                 if (result.error) {

@@ -1,12 +1,14 @@
-import * as kue from 'kue';
-// export interface ITaskParams {
-//   [key: string]: any;
-// }
+import * as kue from "kue";
 // TODO: CONVERT THIS TO CONFIG
 const redisConfig = {
     redis: process.env.REDIS_URL,
 };
-export class Task {
+export class TaskLauncher {
+    serialize() {
+        const json = this.serializedParams;
+        json.type = this.constructor.name;
+        return json;
+    }
     submit() {
         const jobQueue = kue.createQueue(redisConfig);
         return new Promise((resolve, reject) => {
@@ -30,10 +32,5 @@ export class Task {
             });
         });
     }
-    serialize() {
-        const json = this.serializedParams;
-        json.type = this.constructor.name;
-        return json;
-    }
 }
-//# sourceMappingURL=task.js.map
+//# sourceMappingURL=task-launcher.js.map

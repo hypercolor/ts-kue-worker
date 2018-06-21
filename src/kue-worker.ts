@@ -1,8 +1,8 @@
 import * as express from 'express'
 import * as kue from 'kue'
 import { Queue } from 'kue'
-import { ITaskType, Task } from './task'
 import { TaskRouter } from './task-router'
+import { ITaskType, TaskRunner } from './task-runner'
 
 const redisConfig = {
   redis: process.env.REDIS_URL,
@@ -35,18 +35,18 @@ export class KueWorker {
     expressApp.use('/kue', kue.app)
   }
 
-  public registerTask<T extends Task>(taskType: ITaskType<T>) {
+  public registerTask<T extends TaskRunner>(taskType: ITaskType<T>) {
     TaskRouter.registerTask(taskType)
 
     this.jobQueue.process(taskType.name, taskType.maxConcurrent, (job: kue.Job, done: kue.DoneCallback) => {
       const start = new Date().getTime()
 
-      let task: Task
+      let task: TaskRunner
 
       TaskRouter.deserializeTask(job)
         .then(t => {
           task = t
-          return task.workerRun()
+          return task.run()
         })
         .then(result => {
           if (result.error) {

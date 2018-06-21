@@ -1,33 +1,18 @@
 import * as kue from 'kue'
-import { Job } from 'kue'
-
-// export interface ITaskParams {
-//   [key: string]: any;
-// }
 
 // TODO: CONVERT THIS TO CONFIG
 const redisConfig = {
   redis: process.env.REDIS_URL,
 }
 
-export interface ITaskResult {
-  success: boolean
-  error?: any
-  result?: any
-}
-
-export interface ITaskType<T extends Task> {
-  name: string
-  maxConcurrent: number
-  build(serializedParams: any): Promise<T>
-}
-
-export abstract class Task {
-  protected job?: Job
-
-  public abstract workerRun(): Promise<ITaskResult>
-
+export abstract class TaskLauncher {
   protected abstract get serializedParams(): any
+
+  public serialize() {
+    const json = this.serializedParams
+    json.type = this.constructor.name
+    return json
+  }
 
   public submit() {
     const jobQueue = kue.createQueue(redisConfig)
@@ -51,11 +36,5 @@ export abstract class Task {
           }
         })
     })
-  }
-
-  public serialize() {
-    const json = this.serializedParams
-    json.type = this.constructor.name
-    return json
   }
 }

@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /*!******************!*\
   !*** ./index.ts ***!
   \******************/
-/*! exports provided: KueWorker, Task */
+/*! exports provided: KueWorker, TaskRunner */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -99,8 +99,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/kue-worker */ "./src/kue-worker.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "KueWorker", function() { return _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__["KueWorker"]; });
 
-/* harmony import */ var _src_task__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/task */ "./src/task.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Task", function() { return _src_task__WEBPACK_IMPORTED_MODULE_1__["Task"]; });
+/* harmony import */ var _src_task_runner__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/task-runner */ "./src/task-runner.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TaskRunner", function() { return _src_task_runner__WEBPACK_IMPORTED_MODULE_1__["TaskRunner"]; });
 
 
 
@@ -151,7 +151,7 @@ var KueWorker = /** @class */ (function () {
             _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].deserializeTask(job)
                 .then(function (t) {
                 task = t;
-                return task.workerRun();
+                return task.run();
             })
                 .then(function (result) {
                 if (result.error) {
@@ -206,7 +206,7 @@ var TaskRouter = /** @class */ (function () {
             for (var _i = 0, _a = this.taskTypes; _i < _a.length; _i++) {
                 var taskType = _a[_i];
                 if (job.type === taskType.name) {
-                    return taskType.build(job.data);
+                    return taskType.deserialize(job.data);
                 }
             }
         }
@@ -220,59 +220,20 @@ var TaskRouter = /** @class */ (function () {
 
 /***/ }),
 
-/***/ "./src/task.ts":
-/*!*********************!*\
-  !*** ./src/task.ts ***!
-  \*********************/
-/*! exports provided: Task */
+/***/ "./src/task-runner.ts":
+/*!****************************!*\
+  !*** ./src/task-runner.ts ***!
+  \****************************/
+/*! exports provided: TaskRunner */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Task", function() { return Task; });
-/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kue */ "kue");
-/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kue__WEBPACK_IMPORTED_MODULE_0__);
-
-// export interface ITaskParams {
-//   [key: string]: any;
-// }
-// TODO: CONVERT THIS TO CONFIG
-var redisConfig = {
-    redis: process.env.REDIS_URL,
-};
-var Task = /** @class */ (function () {
-    function Task() {
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TaskRunner", function() { return TaskRunner; });
+var TaskRunner = /** @class */ (function () {
+    function TaskRunner() {
     }
-    Task.prototype.submit = function () {
-        var _this = this;
-        var jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](redisConfig);
-        return new Promise(function (resolve, reject) {
-            // this.sharedInstance.jobQueue = kue.createQueue();
-            var job = jobQueue
-                .create(_this.constructor.name, _this.serialize())
-                .priority('normal')
-                .attempts(1)
-                .backoff(true)
-                .removeOnComplete(false)
-                .delay(0)
-                .save(function (err) {
-                if (err) {
-                    console.log('Error submitting task: ' + JSON.stringify(err));
-                    reject(err);
-                }
-                else {
-                    // console.log('Task submitted.');
-                    resolve(job);
-                }
-            });
-        });
-    };
-    Task.prototype.serialize = function () {
-        var json = this.serializedParams;
-        json.type = this.constructor.name;
-        return json;
-    };
-    return Task;
+    return TaskRunner;
 }());
 
 
