@@ -15,8 +15,6 @@ export class KueWorkerConfig {
 }
 
 export class KueWorker {
-  // private static sharedInstance: Worker = new Worker();
-
   public jobQueue: Queue
 
   constructor() {
@@ -35,6 +33,10 @@ export class KueWorker {
       console.error(err)
       console.error(err.stack)
     })
+  }
+
+  public static setRedisUrl(redisUrl: string) {
+    KueWorkerConfig.redisParams.redis = redisUrl
   }
 
   public static mountBrowserApp(expressApp: express.Application) {

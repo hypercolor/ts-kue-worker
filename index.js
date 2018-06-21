@@ -91,15 +91,13 @@ return /******/ (function(modules) { // webpackBootstrap
 /*!******************!*\
   !*** ./index.ts ***!
   \******************/
-/*! exports provided: KueWorker, KueWorkerConfig, TaskRunner, TaskLauncher */
+/*! exports provided: KueWorker, TaskRunner, TaskLauncher */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/kue-worker */ "./src/kue-worker.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "KueWorker", function() { return _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__["KueWorker"]; });
-
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "KueWorkerConfig", function() { return _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__["KueWorkerConfig"]; });
 
 /* harmony import */ var _src_task_runner__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/task-runner */ "./src/task-runner.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TaskRunner", function() { return _src_task_runner__WEBPACK_IMPORTED_MODULE_1__["TaskRunner"]; });
@@ -134,7 +132,7 @@ var KueWorkerConfig = /** @class */ (function () {
     function KueWorkerConfig() {
     }
     KueWorkerConfig.redisParams = {
-        redis: 'redis://localhost:6379'
+        redis: 'redis://localhost:6379',
     };
     return KueWorkerConfig;
 }());
@@ -153,6 +151,9 @@ var KueWorker = /** @class */ (function () {
             console.error(err.stack);
         });
     }
+    KueWorker.setRedisUrl = function (redisUrl) {
+        KueWorkerConfig.redisParams.redis = redisUrl;
+    };
     KueWorker.mountBrowserApp = function (expressApp) {
         expressApp.use('/kue', kue__WEBPACK_IMPORTED_MODULE_0__["app"]);
     };

@@ -3,7 +3,7 @@ import { TaskRouter } from './task-router';
 export class KueWorkerConfig {
 }
 KueWorkerConfig.redisParams = {
-    redis: 'redis://localhost:6379'
+    redis: 'redis://localhost:6379',
 };
 export class KueWorker {
     constructor() {
@@ -18,6 +18,9 @@ export class KueWorker {
             console.error(err);
             console.error(err.stack);
         });
+    }
+    static setRedisUrl(redisUrl) {
+        KueWorkerConfig.redisParams.redis = redisUrl;
     }
     static mountBrowserApp(expressApp) {
         expressApp.use('/kue', kue.app);

@@ -1,5 +1,5 @@
 import * as kue from 'kue';
-import { KueWorkerConfig } from "./kue-worker";
+import { KueWorkerConfig } from './kue-worker';
 export class TaskLauncher {
     serialize() {
         const json = this.params;

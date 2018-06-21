@@ -16,6 +16,7 @@ export class KueWorkerConfig {
 export class KueWorker {
     jobQueue: Queue;
     constructor();
+    static setRedisUrl(redisUrl: string): void;
     static mountBrowserApp(expressApp: express.Application): void;
     registerTask<T extends TaskRunner>(taskType: ITaskType<T>): void;
 }
