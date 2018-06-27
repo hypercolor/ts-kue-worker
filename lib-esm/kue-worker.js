@@ -6,7 +6,7 @@ KueWorkerConfig.redisParams = {
     redis: 'redis://localhost:6379',
 };
 export class KueWorker {
-    constructor() {
+    constructor(redisConfig) {
         // console.log('Setting up Kue...');
         this.jobQueue = kue.createQueue(KueWorkerConfig.redisParams);
         this.jobQueue.watchStuckJobs(1000 * 10);
@@ -18,9 +18,6 @@ export class KueWorker {
             console.error(err);
             console.error(err.stack);
         });
-    }
-    static setRedisUrl(redisUrl) {
-        KueWorkerConfig.redisParams.redis = redisUrl;
     }
     static mountBrowserApp(expressApp) {
         expressApp.use('/kue', kue.app);

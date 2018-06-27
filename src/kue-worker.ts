@@ -4,12 +4,12 @@ import { Queue } from 'kue'
 import { TaskRouter } from './task-router'
 import { ITaskType, TaskRunner } from './task-runner'
 
-export interface IRedisConfig {
+export interface IKueConfig {
   redis: string
 }
 
 export class KueWorkerConfig {
-  static redisParams: IRedisConfig = {
+  static redisParams: IKueConfig = {
     redis: 'redis://localhost:6379',
   }
 }
@@ -17,7 +17,7 @@ export class KueWorkerConfig {
 export class KueWorker {
   public jobQueue: Queue
 
-  constructor() {
+  constructor(redisConfig: IKueConfig) {
     // console.log('Setting up Kue...');
 
     this.jobQueue = kue.createQueue(KueWorkerConfig.redisParams)
@@ -33,10 +33,6 @@ export class KueWorker {
       console.error(err)
       console.error(err.stack)
     })
-  }
-
-  public static setRedisUrl(redisUrl: string) {
-    KueWorkerConfig.redisParams.redis = redisUrl
   }
 
   public static mountBrowserApp(expressApp: express.Application) {

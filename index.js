@@ -138,7 +138,7 @@ var KueWorkerConfig = /** @class */ (function () {
 }());
 
 var KueWorker = /** @class */ (function () {
-    function KueWorker() {
+    function KueWorker(redisConfig) {
         // console.log('Setting up Kue...');
         this.jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](KueWorkerConfig.redisParams);
         this.jobQueue.watchStuckJobs(1000 * 10);
@@ -151,9 +151,6 @@ var KueWorker = /** @class */ (function () {
             console.error(err.stack);
         });
     }
-    KueWorker.setRedisUrl = function (redisUrl) {
-        KueWorkerConfig.redisParams.redis = redisUrl;
-    };
     KueWorker.mountBrowserApp = function (expressApp) {
         expressApp.use('/kue', kue__WEBPACK_IMPORTED_MODULE_0__["app"]);
     };
