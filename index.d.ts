@@ -7,15 +7,17 @@ import * as express from 'express';
 import { Queue } from 'kue';
 import { Job } from 'kue';
 
-export interface IKueConfig {
-    redis: string;
+export interface IKueWorkerConfig {
+    connection: {
+        redis: string;
+    };
 }
 export class KueWorkerConfig {
-    static redisParams: IKueConfig;
+    static config: IKueWorkerConfig;
 }
 export class KueWorker {
     jobQueue: Queue;
-    constructor(redisConfig: IKueConfig);
+    constructor(config: IKueWorkerConfig);
     static mountBrowserApp(expressApp: express.Application): void;
     registerTask<T extends TaskRunner>(taskType: ITaskType<T>): void;
 }

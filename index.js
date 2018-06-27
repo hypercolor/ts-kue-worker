@@ -131,16 +131,18 @@ __webpack_require__.r(__webpack_exports__);
 var KueWorkerConfig = /** @class */ (function () {
     function KueWorkerConfig() {
     }
-    KueWorkerConfig.redisParams = {
-        redis: 'redis://localhost:6379',
+    KueWorkerConfig.config = {
+        connection: {
+            redis: 'redis://localhost:6379'
+        }
     };
     return KueWorkerConfig;
 }());
 
 var KueWorker = /** @class */ (function () {
-    function KueWorker(redisConfig) {
-        // console.log('Setting up Kue...');
-        this.jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](KueWorkerConfig.redisParams);
+    function KueWorker(config) {
+        KueWorkerConfig.config = config;
+        this.jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](KueWorkerConfig.config.connection);
         this.jobQueue.watchStuckJobs(1000 * 10);
         // this.jobQueue.on('ready', function(){
         //   console.info('Queue is ready!');
@@ -221,7 +223,7 @@ var TaskLauncher = /** @class */ (function () {
     };
     TaskLauncher.prototype.submit = function () {
         var _this = this;
-        var jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](_kue_worker__WEBPACK_IMPORTED_MODULE_1__["KueWorkerConfig"].redisParams);
+        var jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](_kue_worker__WEBPACK_IMPORTED_MODULE_1__["KueWorkerConfig"].config.connection);
         return new Promise(function (resolve, reject) {
             // this.sharedInstance.jobQueue = kue.createQueue();
             var job = jobQueue

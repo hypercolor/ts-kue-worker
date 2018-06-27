@@ -4,23 +4,27 @@ import { Queue } from 'kue'
 import { TaskRouter } from './task-router'
 import { ITaskType, TaskRunner } from './task-runner'
 
-export interface IKueConfig {
-  redis: string
+export interface IKueWorkerConfig {
+  connection: {
+    redis: string
+  }
 }
 
 export class KueWorkerConfig {
-  static redisParams: IKueConfig = {
-    redis: 'redis://localhost:6379',
+  static config: IKueWorkerConfig = {
+    connection: {
+      redis: 'redis://localhost:6379',
+    },
   }
 }
 
 export class KueWorker {
   public jobQueue: Queue
 
-  constructor(redisConfig: IKueConfig) {
-    // console.log('Setting up Kue...');
+  constructor(config: IKueWorkerConfig) {
+    KueWorkerConfig.config = config
 
-    this.jobQueue = kue.createQueue(KueWorkerConfig.redisParams)
+    this.jobQueue = kue.createQueue(KueWorkerConfig.config.connection)
 
     this.jobQueue.watchStuckJobs(1000 * 10)
 

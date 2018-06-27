@@ -1,15 +1,17 @@
 import * as express from 'express';
 import { Queue } from 'kue';
 import { ITaskType, TaskRunner } from './task-runner';
-export interface IKueConfig {
-    redis: string;
+export interface IKueWorkerConfig {
+    connection: {
+        redis: string;
+    };
 }
 export declare class KueWorkerConfig {
-    static redisParams: IKueConfig;
+    static config: IKueWorkerConfig;
 }
 export declare class KueWorker {
     jobQueue: Queue;
-    constructor(redisConfig: IKueConfig);
+    constructor(config: IKueWorkerConfig);
     static mountBrowserApp(expressApp: express.Application): void;
     registerTask<T extends TaskRunner>(taskType: ITaskType<T>): void;
 }
