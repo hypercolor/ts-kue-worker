@@ -141,7 +141,7 @@ var KueWorker = /** @class */ (function () {
             console.error(err.stack);
         });
     }
-    KueWorker.mountBrowserApp = function (expressApp) {
+    KueWorker.prototype.mountBrowserApp = function (expressApp) {
         expressApp.use('/kue', kue__WEBPACK_IMPORTED_MODULE_0__["app"]);
     };
     KueWorker.prototype.registerTask = function (taskType) {

@@ -10,6 +10,6 @@ export declare class KueWorker {
     config: IKueWorkerConfig;
     jobQueue: Queue;
     constructor(config: IKueWorkerConfig);
-    static mountBrowserApp(expressApp: express.Application): void;
+    mountBrowserApp(expressApp: express.Application): void;
     registerTask<T extends TaskRunner>(taskType: ITaskType<T>): void;
 }

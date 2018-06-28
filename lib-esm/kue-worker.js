@@ -14,7 +14,7 @@ export class KueWorker {
             console.error(err.stack);
         });
     }
-    static mountBrowserApp(expressApp) {
+    mountBrowserApp(expressApp) {
         expressApp.use('/kue', kue.app);
     }
     registerTask(taskType) {

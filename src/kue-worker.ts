@@ -29,7 +29,7 @@ export class KueWorker {
     })
   }
 
-  public static mountBrowserApp(expressApp: express.Application) {
+  public mountBrowserApp(expressApp: express.Application) {
     expressApp.use('/kue', kue.app)
   }
 
