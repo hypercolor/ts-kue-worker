@@ -4,8 +4,8 @@ export class KueWorkerConfig {
 }
 KueWorkerConfig.config = {
     connection: {
-        redis: 'redis://localhost:6379'
-    }
+        redis: 'redis://localhost:6379',
+    },
 };
 export class KueWorker {
     constructor(config) {
