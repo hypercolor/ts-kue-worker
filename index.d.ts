@@ -12,10 +12,8 @@ export interface IKueWorkerConfig {
         redis: string;
     };
 }
-export class KueWorkerConfig {
-    static config: IKueWorkerConfig;
-}
 export class KueWorker {
+    config: IKueWorkerConfig;
     jobQueue: Queue;
     constructor(config: IKueWorkerConfig);
     static mountBrowserApp(expressApp: express.Application): void;
@@ -40,6 +38,6 @@ export abstract class TaskRunner {
 export abstract class TaskLauncher {
     protected abstract readonly params: any;
     serialize(): any;
-    submit(): Promise<{}>;
+    submit(workerConfig: IKueWorkerConfig): Promise<{}>;
 }
 

@@ -1,13 +1,12 @@
 import * as kue from 'kue';
-import { KueWorkerConfig } from './kue-worker';
 export class TaskLauncher {
     serialize() {
         const json = this.params;
         json.type = this.constructor.name;
         return json;
     }
-    submit() {
-        const jobQueue = kue.createQueue(KueWorkerConfig.config.connection);
+    submit(workerConfig) {
+        const jobQueue = kue.createQueue(workerConfig);
         return new Promise((resolve, reject) => {
             // this.sharedInstance.jobQueue = kue.createQueue();
             const job = jobQueue

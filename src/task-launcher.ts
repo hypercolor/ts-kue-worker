@@ -1,5 +1,5 @@
 import * as kue from 'kue'
-import { KueWorkerConfig } from './kue-worker'
+import { IKueWorkerConfig } from './kue-worker'
 
 export abstract class TaskLauncher {
   protected abstract get params(): any
@@ -10,8 +10,8 @@ export abstract class TaskLauncher {
     return json
   }
 
-  public submit() {
-    const jobQueue = kue.createQueue(KueWorkerConfig.config.connection)
+  public submit(workerConfig: IKueWorkerConfig) {
+    const jobQueue = kue.createQueue(workerConfig)
 
     return new Promise((resolve, reject) => {
       // this.sharedInstance.jobQueue = kue.createQueue();

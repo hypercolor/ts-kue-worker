@@ -10,21 +10,11 @@ export interface IKueWorkerConfig {
   }
 }
 
-export class KueWorkerConfig {
-  static config: IKueWorkerConfig = {
-    connection: {
-      redis: 'redis://localhost:6379',
-    },
-  }
-}
-
 export class KueWorker {
   public jobQueue: Queue
 
-  constructor(config: IKueWorkerConfig) {
-    KueWorkerConfig.config = config
-
-    this.jobQueue = kue.createQueue(KueWorkerConfig.config.connection)
+  constructor(public config: IKueWorkerConfig) {
+    this.jobQueue = kue.createQueue(config.connection)
 
     this.jobQueue.watchStuckJobs(1000 * 10)
 

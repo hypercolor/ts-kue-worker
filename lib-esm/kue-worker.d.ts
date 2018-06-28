@@ -6,10 +6,8 @@ export interface IKueWorkerConfig {
         redis: string;
     };
 }
-export declare class KueWorkerConfig {
-    static config: IKueWorkerConfig;
-}
 export declare class KueWorker {
+    config: IKueWorkerConfig;
     jobQueue: Queue;
     constructor(config: IKueWorkerConfig);
     static mountBrowserApp(expressApp: express.Application): void;
