@@ -6,7 +6,7 @@ export class TaskLauncher {
         return json;
     }
     submit(workerConfig) {
-        const jobQueue = kue.createQueue(workerConfig);
+        const jobQueue = kue.createQueue(workerConfig.connection);
         return new Promise((resolve, reject) => {
             // this.sharedInstance.jobQueue = kue.createQueue();
             const job = jobQueue

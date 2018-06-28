@@ -1,6 +1,6 @@
 {
   "name": "ts-kue-worker",
-  "version": "0.1.15",
+  "version": "0.1.16",
   "description": "TypeScript worker stack using Kue",
   "main": "index.js",
   "types": "index.d.ts",

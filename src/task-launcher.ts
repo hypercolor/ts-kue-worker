@@ -11,7 +11,7 @@ export abstract class TaskLauncher {
   }
 
   public submit(workerConfig: IKueWorkerConfig) {
-    const jobQueue = kue.createQueue(workerConfig)
+    const jobQueue = kue.createQueue(workerConfig.connection)
 
     return new Promise((resolve, reject) => {
       // this.sharedInstance.jobQueue = kue.createQueue();

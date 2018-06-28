@@ -209,7 +209,7 @@ var TaskLauncher = /** @class */ (function () {
     };
     TaskLauncher.prototype.submit = function (workerConfig) {
         var _this = this;
-        var jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](workerConfig);
+        var jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](workerConfig.connection);
         return new Promise(function (resolve, reject) {
             // this.sharedInstance.jobQueue = kue.createQueue();
             var job = jobQueue
