@@ -2,9 +2,9 @@ import * as kue from 'kue'
 import { ITaskType, TaskRunner } from './task-runner'
 
 export class TaskRouter {
-  private static taskTypes: Array<ITaskType<any>> = []
+  private static taskTypes: Array<ITaskType> = []
 
-  public static registerTask(taskType: ITaskType<any>) {
+  public static registerTask(taskType: ITaskType) {
     this.taskTypes.push(taskType)
   }
 

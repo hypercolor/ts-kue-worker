@@ -202,18 +202,13 @@ __webpack_require__.r(__webpack_exports__);
 var TaskLauncher = /** @class */ (function () {
     function TaskLauncher() {
     }
-    TaskLauncher.prototype.serialize = function () {
-        var json = this.params;
-        json.type = this.constructor.name;
-        return json;
-    };
     TaskLauncher.prototype.submit = function (workerConfig) {
         var _this = this;
         var jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](workerConfig.connection);
         return new Promise(function (resolve, reject) {
             // this.sharedInstance.jobQueue = kue.createQueue();
             var job = jobQueue
-                .create(_this.constructor.name, _this.serialize())
+                .create(_this.runner.name, _this.params)
                 .priority('normal')
                 .attempts(1)
                 .backoff(true)

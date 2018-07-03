@@ -4,10 +4,10 @@ export interface ITaskResult {
     error?: any;
     result?: any;
 }
-export interface ITaskType<T extends TaskRunner> {
+export interface ITaskType {
     name: string;
     maxConcurrent: number;
-    deserialize(serializedParams: any): Promise<T>;
+    deserialize(serializedParams: any): Promise<TaskRunner>;
 }
 export declare abstract class TaskRunner {
     protected job?: Job;

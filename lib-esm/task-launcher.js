@@ -1,16 +1,11 @@
 import * as kue from 'kue';
 export class TaskLauncher {
-    serialize() {
-        const json = this.params;
-        json.type = this.constructor.name;
-        return json;
-    }
     submit(workerConfig) {
         const jobQueue = kue.createQueue(workerConfig.connection);
         return new Promise((resolve, reject) => {
             // this.sharedInstance.jobQueue = kue.createQueue();
             const job = jobQueue
-                .create(this.constructor.name, this.serialize())
+                .create(this.runner.name, this.params)
                 .priority('normal')
                 .attempts(1)
                 .backoff(true)

@@ -17,7 +17,7 @@ export class KueWorker {
     jobQueue: Queue;
     constructor(config: IKueWorkerConfig);
     mountBrowserApp(expressApp: express.Application): void;
-    registerTask<T extends TaskRunner>(taskType: ITaskType<T>): void;
+    registerTask(taskType: ITaskType): void;
 }
 
 export interface ITaskResult {
@@ -25,10 +25,10 @@ export interface ITaskResult {
     error?: any;
     result?: any;
 }
-export interface ITaskType<T extends TaskRunner> {
+export interface ITaskType {
     name: string;
     maxConcurrent: number;
-    deserialize(serializedParams: any): Promise<T>;
+    deserialize(serializedParams: any): Promise<TaskRunner>;
 }
 export abstract class TaskRunner {
     protected job?: Job;
@@ -37,7 +37,7 @@ export abstract class TaskRunner {
 
 export abstract class TaskLauncher {
     protected abstract readonly params: any;
-    serialize(): any;
+    abstract readonly runner: ITaskType;
     submit(workerConfig: IKueWorkerConfig): Promise<{}>;
 }
 

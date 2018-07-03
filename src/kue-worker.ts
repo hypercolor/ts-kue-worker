@@ -33,7 +33,7 @@ export class KueWorker {
     expressApp.use('/kue', kue.app)
   }
 
-  public registerTask<T extends TaskRunner>(taskType: ITaskType<T>) {
+  public registerTask(taskType: ITaskType) {
     TaskRouter.registerTask(taskType)
 
     this.jobQueue.process(taskType.name, taskType.maxConcurrent, (job: kue.Job, done: kue.DoneCallback) => {
