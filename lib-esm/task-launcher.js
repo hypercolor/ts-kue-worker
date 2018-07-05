@@ -5,7 +5,7 @@ export class TaskLauncher {
         return new Promise((resolve, reject) => {
             // this.sharedInstance.jobQueue = kue.createQueue();
             const job = jobQueue
-                .create(this.runner.name, this.params)
+                .create(this.runner.constructor.name, this.params)
                 .priority('normal')
                 .attempts(1)
                 .backoff(true)

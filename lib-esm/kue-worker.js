@@ -19,7 +19,7 @@ export class KueWorker {
     }
     registerTask(taskType) {
         TaskRouter.registerTask(taskType);
-        this.jobQueue.process(taskType.name, taskType.maxConcurrent, (job, done) => {
+        this.jobQueue.process(taskType.constructor.name, taskType.maxConcurrent, (job, done) => {
             const start = new Date().getTime();
             let task;
             TaskRouter.deserializeTask(job)

@@ -146,7 +146,7 @@ var KueWorker = /** @class */ (function () {
     };
     KueWorker.prototype.registerTask = function (taskType) {
         _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].registerTask(taskType);
-        this.jobQueue.process(taskType.name, taskType.maxConcurrent, function (job, done) {
+        this.jobQueue.process(taskType.constructor.name, taskType.maxConcurrent, function (job, done) {
             var start = new Date().getTime();
             var task;
             _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].deserializeTask(job)
@@ -208,7 +208,7 @@ var TaskLauncher = /** @class */ (function () {
         return new Promise(function (resolve, reject) {
             // this.sharedInstance.jobQueue = kue.createQueue();
             var job = jobQueue
-                .create(_this.runner.name, _this.params)
+                .create(_this.runner.constructor.name, _this.params)
                 .priority('normal')
                 .attempts(1)
                 .backoff(true)
@@ -253,7 +253,7 @@ var TaskRouter = /** @class */ (function () {
         if (job.type) {
             for (var _i = 0, _a = this.taskTypes; _i < _a.length; _i++) {
                 var taskType = _a[_i];
-                if (job.type === taskType.name) {
+                if (job.type === taskType.constructor.name) {
                     return taskType.deserialize(job.data);
                 }
             }

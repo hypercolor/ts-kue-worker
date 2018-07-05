@@ -26,7 +26,6 @@ export interface ITaskResult {
     result?: any;
 }
 export interface ITaskType {
-    name: string;
     maxConcurrent: number;
     deserialize(serializedParams: any): Promise<TaskRunner>;
 }

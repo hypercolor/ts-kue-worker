@@ -11,7 +11,7 @@ export class TaskRouter {
   public static deserializeTask(job: kue.Job): Promise<TaskRunner> {
     if (job.type) {
       for (const taskType of this.taskTypes) {
-        if (job.type === taskType.name) {
+        if (job.type === taskType.constructor.name) {
           return taskType.deserialize(job.data)
         }
       }
