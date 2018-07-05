@@ -5,7 +5,7 @@ export class TaskRouter {
     static deserializeTask(job) {
         if (job.type) {
             for (const taskType of this.taskTypes) {
-                if (job.type === taskType.constructor.name) {
+                if (job.type === taskType.name) {
                     return taskType.deserialize(job.data);
                 }
             }

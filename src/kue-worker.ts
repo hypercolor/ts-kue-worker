@@ -36,7 +36,7 @@ export class KueWorker {
   public registerTask(taskType: ITaskRunnerClass) {
     TaskRouter.registerTask(taskType)
 
-    this.jobQueue.process(taskType.constructor.name, taskType.maxConcurrent, (job: kue.Job, done: kue.DoneCallback) => {
+    this.jobQueue.process(taskType.name, taskType.maxConcurrent, (job: kue.Job, done: kue.DoneCallback) => {
       const start = new Date().getTime()
 
       let task: TaskRunner
