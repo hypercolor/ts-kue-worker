@@ -2,7 +2,7 @@ import * as express from 'express'
 import * as kue from 'kue'
 import { Queue } from 'kue'
 import { TaskRouter } from './task-router'
-import { ITaskType, TaskRunner } from './task-runner'
+import { ITaskRunnerClass, TaskRunner } from './task-runner'
 
 export interface IKueWorkerConfig {
   connection: {
@@ -33,7 +33,7 @@ export class KueWorker {
     expressApp.use('/kue', kue.app)
   }
 
-  public registerTask(taskType: ITaskType) {
+  public registerTask(taskType: ITaskRunnerClass) {
     TaskRouter.registerTask(taskType)
 
     this.jobQueue.process(taskType.constructor.name, taskType.maxConcurrent, (job: kue.Job, done: kue.DoneCallback) => {

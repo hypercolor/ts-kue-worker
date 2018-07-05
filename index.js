@@ -281,6 +281,7 @@ __webpack_require__.r(__webpack_exports__);
 var TaskRunner = /** @class */ (function () {
     function TaskRunner() {
     }
+    TaskRunner.maxConcurrent = 1;
     return TaskRunner;
 }());
 

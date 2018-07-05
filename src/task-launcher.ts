@@ -1,11 +1,11 @@
 import * as kue from 'kue'
 import { IKueWorkerConfig } from './kue-worker'
-import { ITaskType } from './task-runner'
+import { ITaskRunnerClass } from './task-runner'
 
 export abstract class TaskLauncher {
   protected abstract get params(): any
 
-  public abstract get runner(): ITaskType
+  public abstract get runner(): ITaskRunnerClass
 
   public submit(workerConfig: IKueWorkerConfig) {
     const jobQueue = kue.createQueue(workerConfig.connection)

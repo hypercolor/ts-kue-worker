@@ -1,7 +1,7 @@
 import * as kue from 'kue';
-import { ITaskType, TaskRunner } from './task-runner';
+import { ITaskRunnerClass, TaskRunner } from './task-runner';
 export declare class TaskRouter {
     private static taskTypes;
-    static registerTask(taskType: ITaskType): void;
+    static registerTask(taskType: ITaskRunnerClass): void;
     static deserializeTask(job: kue.Job): Promise<TaskRunner>;
 }
