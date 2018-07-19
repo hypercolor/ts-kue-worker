@@ -34,13 +34,17 @@ export class KueWorker {
                     done(result.error);
                 }
                 else {
-                    console.log('Processed job ' +
+                    let msg = 'Processed job ' +
                         task.constructor.name +
                         ' (' +
                         job.id +
                         ') in ' +
                         (new Date().getTime() - start) +
-                        ' ms.');
+                        ' ms';
+                    if (result.message) {
+                        msg += ': ' + result.message;
+                    }
+                    console.log(msg);
                     job.remove();
                     done();
                 }

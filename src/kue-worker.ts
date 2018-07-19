@@ -52,15 +52,19 @@ export class KueWorker {
             job.remove()
             done(result.error)
           } else {
-            console.log(
+            let msg =
               'Processed job ' +
-                task.constructor.name +
-                ' (' +
-                job.id +
-                ') in ' +
-                (new Date().getTime() - start) +
-                ' ms.'
-            )
+              task.constructor.name +
+              ' (' +
+              job.id +
+              ') in ' +
+              (new Date().getTime() - start) +
+              ' ms'
+
+            if (result.message) {
+              msg += ': ' + result.message
+            }
+            console.log(msg)
             job.remove()
             done()
           }

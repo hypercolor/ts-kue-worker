@@ -24,6 +24,7 @@ export interface ITaskResult {
     success: boolean;
     error?: any;
     result?: any;
+    message?: string;
 }
 export interface ITaskRunnerClass {
     name: string;
