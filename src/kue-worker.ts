@@ -52,14 +52,7 @@ export class KueWorker {
             job.remove()
             done(result.error)
           } else {
-            let msg =
-              'Processed job ' +
-              task.constructor.name +
-              ' (' +
-              job.id +
-              ') in ' +
-              (new Date().getTime() - start) +
-              ' ms'
+            let msg = task.constructor.name + '[' + job.id + '] ' + (new Date().getTime() - start) + ' ms'
 
             if (result.message) {
               msg += ': ' + result.message

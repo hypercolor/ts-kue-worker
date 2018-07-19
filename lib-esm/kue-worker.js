@@ -34,11 +34,10 @@ export class KueWorker {
                     done(result.error);
                 }
                 else {
-                    let msg = 'Processed job ' +
-                        task.constructor.name +
-                        ' (' +
+                    let msg = task.constructor.name +
+                        '[' +
                         job.id +
-                        ') in ' +
+                        '] ' +
                         (new Date().getTime() - start) +
                         ' ms';
                     if (result.message) {
