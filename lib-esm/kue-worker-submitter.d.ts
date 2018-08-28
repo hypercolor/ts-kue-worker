@@ -5,6 +5,6 @@ export declare class KueWorkerSubmitter {
     private config;
     constructor(config: IKueWorkerConfig);
     getBrowserApp(): express.Application;
-    registerTasks(taskTypes: Array<ITaskClass>): void;
-    registerTask(taskType: ITaskClass): void;
+    registerTasks(taskTypes: Array<ITaskClass>): this;
+    registerTask(taskType: ITaskClass): this;
 }

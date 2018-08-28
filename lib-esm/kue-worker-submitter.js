@@ -12,9 +12,11 @@ export class KueWorkerSubmitter {
         taskTypes.forEach(taskType => {
             this.registerTask(taskType);
         });
+        return this;
     }
     registerTask(taskType) {
         taskType.workerConfig = this.config;
+        return this;
     }
 }
 //# sourceMappingURL=kue-worker-submitter.js.map

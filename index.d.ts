@@ -38,7 +38,7 @@ export abstract class Task {
 export class KueWorkerSubmitter {
     constructor(config: IKueWorkerConfig);
     getBrowserApp(): express.Application;
-    registerTasks(taskTypes: Array<ITaskClass>): void;
-    registerTask(taskType: ITaskClass): void;
+    registerTasks(taskTypes: Array<ITaskClass>): this;
+    registerTask(taskType: ITaskClass): this;
 }
 
