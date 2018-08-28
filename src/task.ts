@@ -21,6 +21,7 @@ export abstract class Task {
   public abstract doTaskWork(): Promise<any>
 
   public submit() {
+    console.log('submit: ' + JSON.stringify((this.constructor as any).workerConfig.connection))
     const jobQueue = kue.createQueue((this.constructor as any).workerConfig.connection)
 
     return new Promise((resolve, reject) => {

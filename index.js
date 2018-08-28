@@ -129,7 +129,9 @@ var KueWorkerSubmitter = /** @class */ (function () {
     function KueWorkerSubmitter(config) {
         this.config = config;
     }
-    KueWorkerSubmitter.getBrowserApp = function () {
+    KueWorkerSubmitter.prototype.getBrowserApp = function () {
+        // create a queue to force kue to set its global app variable to use our connection params :/
+        kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](this.config.connection);
         return kue__WEBPACK_IMPORTED_MODULE_0__["app"];
     };
     KueWorkerSubmitter.prototype.registerTasks = function (taskTypes) {
@@ -277,6 +279,7 @@ var Task = /** @class */ (function () {
     }
     Task.prototype.submit = function () {
         var _this = this;
+        console.log('submit: ' + JSON.stringify(this.constructor.workerConfig.connection));
         var jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](this.constructor.workerConfig.connection);
         return new Promise(function (resolve, reject) {
             // this.sharedInstance.jobQueue = kue.createQueue();

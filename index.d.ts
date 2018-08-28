@@ -5,7 +5,7 @@
 
 import { Queue } from 'kue';
 import { Job } from 'kue';
-import * as express from "express";
+import * as express from 'express';
 
 export interface IKueWorkerConfig {
     connection: {
@@ -37,7 +37,7 @@ export abstract class Task {
 
 export class KueWorkerSubmitter {
     constructor(config: IKueWorkerConfig);
-    static getBrowserApp(): express.Application;
+    getBrowserApp(): express.Application;
     registerTasks(taskTypes: Array<ITaskClass>): void;
     registerTask(taskType: ITaskClass): void;
 }

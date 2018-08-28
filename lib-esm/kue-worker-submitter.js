@@ -3,7 +3,9 @@ export class KueWorkerSubmitter {
     constructor(config) {
         this.config = config;
     }
-    static getBrowserApp() {
+    getBrowserApp() {
+        // create a queue to force kue to set its global app variable to use our connection params :/
+        kue.createQueue(this.config.connection);
         return kue.app;
     }
     registerTasks(taskTypes) {
