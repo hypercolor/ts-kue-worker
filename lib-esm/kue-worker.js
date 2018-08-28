@@ -28,19 +28,14 @@ export class KueWorker {
                 return task.run();
             })
                 .then(result => {
-                if (result.error) {
+                if (result && result.error) {
                     console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ' + JSON.stringify(result.error));
                     job.remove();
                     done(result.error);
                 }
                 else {
-                    let msg = task.constructor.name +
-                        '[' +
-                        job.id +
-                        '] ' +
-                        (new Date().getTime() - start) +
-                        ' ms';
-                    if (result.message) {
+                    let msg = task.constructor.name + '[' + job.id + '] ' + (new Date().getTime() - start) + ' ms';
+                    if (result && result.message) {
                         msg += ': ' + result.message;
                     }
                     console.log(msg);

@@ -20,12 +20,6 @@ export class KueWorker {
     registerTask(taskType: ITaskRunnerClass): void;
 }
 
-export interface ITaskResult {
-    success: boolean;
-    error?: any;
-    result?: any;
-    message?: string;
-}
 export interface ITaskRunnerClass {
     name: string;
     maxConcurrent: number;
@@ -34,7 +28,7 @@ export interface ITaskRunnerClass {
 export abstract class TaskRunner {
     static maxConcurrent: number;
     protected job?: Job;
-    abstract run(): Promise<ITaskResult>;
+    abstract run(): Promise<any>;
 }
 
 export abstract class TaskLauncher {

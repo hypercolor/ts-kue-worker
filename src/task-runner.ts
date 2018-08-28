@@ -1,16 +1,5 @@
 import { Job } from 'kue'
 
-// export interface ITaskParams {
-//   [key: string]: any;
-// }
-
-export interface ITaskResult {
-  success: boolean
-  error?: any
-  result?: any
-  message?: string
-}
-
 export interface ITaskRunnerClass {
   name: string
   maxConcurrent: number
@@ -22,5 +11,5 @@ export abstract class TaskRunner {
 
   protected job?: Job
 
-  public abstract run(): Promise<ITaskResult>
+  public abstract run(): Promise<any>
 }
