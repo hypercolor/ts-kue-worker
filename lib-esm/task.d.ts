@@ -1,5 +1,5 @@
 import { Job } from 'kue';
-import { IKueWorkerConfig } from "./kue-worker";
+import { IKueWorkerConfig } from './kue-worker';
 export interface ITaskRunnerClass {
     name: string;
     maxConcurrent: number;
@@ -9,8 +9,8 @@ export interface ITaskRunnerClass {
 export declare abstract class Task {
     static maxConcurrent: number;
     static workerConfig: IKueWorkerConfig;
-    protected abstract readonly params: any;
     protected job?: Job;
+    abstract serialize(): any;
     abstract doTaskWork(): Promise<any>;
     submit(): Promise<{}>;
 }

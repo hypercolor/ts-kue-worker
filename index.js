@@ -238,7 +238,7 @@ var Task = /** @class */ (function () {
         return new Promise(function (resolve, reject) {
             // this.sharedInstance.jobQueue = kue.createQueue();
             var job = jobQueue
-                .create(_this.constructor.name, _this.params)
+                .create(_this.constructor.name, _this.serialize())
                 .priority('normal')
                 .attempts(1)
                 .backoff(true)

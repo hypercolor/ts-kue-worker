@@ -14,9 +14,9 @@ export abstract class Task {
 
   static workerConfig: IKueWorkerConfig
 
-  protected abstract get params(): any
-
   protected job?: Job
+
+  public abstract serialize(): any
 
   public abstract doTaskWork(): Promise<any>
 
@@ -26,7 +26,7 @@ export abstract class Task {
     return new Promise((resolve, reject) => {
       // this.sharedInstance.jobQueue = kue.createQueue();
       const job = jobQueue
-        .create(this.constructor.name, this.params)
+        .create(this.constructor.name, this.serialize())
         .priority('normal')
         .attempts(1)
         .backoff(true)

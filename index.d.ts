@@ -29,8 +29,8 @@ export interface ITaskRunnerClass {
 export abstract class Task {
     static maxConcurrent: number;
     static workerConfig: IKueWorkerConfig;
-    protected abstract readonly params: any;
     protected job?: Job;
+    abstract serialize(): any;
     abstract doTaskWork(): Promise<any>;
     submit(): Promise<{}>;
 }
