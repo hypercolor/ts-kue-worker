@@ -21,7 +21,7 @@ export abstract class Task {
   public abstract doTaskWork(): Promise<any>
 
   public submit() {
-    const jobQueue = kue.createQueue(Task.workerConfig.connection)
+    const jobQueue = kue.createQueue((this.constructor as any).workerConfig.connection)
 
     return new Promise((resolve, reject) => {
       // this.sharedInstance.jobQueue = kue.createQueue();

@@ -1,7 +1,7 @@
 import * as kue from 'kue';
 export class Task {
     submit() {
-        const jobQueue = kue.createQueue(Task.workerConfig.connection);
+        const jobQueue = kue.createQueue(this.constructor.workerConfig.connection);
         return new Promise((resolve, reject) => {
             // this.sharedInstance.jobQueue = kue.createQueue();
             const job = jobQueue
