@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /*!******************!*\
   !*** ./index.ts ***!
   \******************/
-/*! exports provided: KueWorker, TaskRunner, TaskLauncher */
+/*! exports provided: KueWorker, Task */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -99,12 +99,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./src/kue-worker */ "./src/kue-worker.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "KueWorker", function() { return _src_kue_worker__WEBPACK_IMPORTED_MODULE_0__["KueWorker"]; });
 
-/* harmony import */ var _src_task_runner__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/task-runner */ "./src/task-runner.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TaskRunner", function() { return _src_task_runner__WEBPACK_IMPORTED_MODULE_1__["TaskRunner"]; });
-
-/* harmony import */ var _src_task_launcher__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/task-launcher */ "./src/task-launcher.ts");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "TaskLauncher", function() { return _src_task_launcher__WEBPACK_IMPORTED_MODULE_2__["TaskLauncher"]; });
-
+/* harmony import */ var _src_task__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/task */ "./src/task.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Task", function() { return _src_task__WEBPACK_IMPORTED_MODULE_1__["Task"]; });
 
 
 
@@ -146,13 +142,14 @@ var KueWorker = /** @class */ (function () {
     };
     KueWorker.prototype.registerTask = function (taskType) {
         _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].registerTask(taskType);
+        taskType.workerConfig = this.config;
         this.jobQueue.process(taskType.name, taskType.maxConcurrent, function (job, done) {
             var start = new Date().getTime();
             var task;
             _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].deserializeTask(job)
                 .then(function (t) {
                 task = t;
-                return task.run();
+                return task.doTaskWork();
             })
                 .then(function (result) {
                 if (result && result.error) {
@@ -178,53 +175,6 @@ var KueWorker = /** @class */ (function () {
         });
     };
     return KueWorker;
-}());
-
-
-
-/***/ }),
-
-/***/ "./src/task-launcher.ts":
-/*!******************************!*\
-  !*** ./src/task-launcher.ts ***!
-  \******************************/
-/*! exports provided: TaskLauncher */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TaskLauncher", function() { return TaskLauncher; });
-/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kue */ "kue");
-/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kue__WEBPACK_IMPORTED_MODULE_0__);
-
-var TaskLauncher = /** @class */ (function () {
-    function TaskLauncher() {
-    }
-    TaskLauncher.prototype.submit = function (workerConfig) {
-        var _this = this;
-        var jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](workerConfig.connection);
-        return new Promise(function (resolve, reject) {
-            // this.sharedInstance.jobQueue = kue.createQueue();
-            var job = jobQueue
-                .create(_this.runner.name, _this.params)
-                .priority('normal')
-                .attempts(1)
-                .backoff(true)
-                .removeOnComplete(false)
-                .delay(0)
-                .save(function (err) {
-                if (err) {
-                    console.log('Error submitting task: ' + JSON.stringify(err));
-                    reject(err);
-                }
-                else {
-                    // console.log('Task submitted.');
-                    resolve(job);
-                }
-            });
-        });
-    };
-    return TaskLauncher;
 }());
 
 
@@ -266,21 +216,48 @@ var TaskRouter = /** @class */ (function () {
 
 /***/ }),
 
-/***/ "./src/task-runner.ts":
-/*!****************************!*\
-  !*** ./src/task-runner.ts ***!
-  \****************************/
-/*! exports provided: TaskRunner */
+/***/ "./src/task.ts":
+/*!*********************!*\
+  !*** ./src/task.ts ***!
+  \*********************/
+/*! exports provided: Task */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TaskRunner", function() { return TaskRunner; });
-var TaskRunner = /** @class */ (function () {
-    function TaskRunner() {
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Task", function() { return Task; });
+/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kue */ "kue");
+/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kue__WEBPACK_IMPORTED_MODULE_0__);
+
+var Task = /** @class */ (function () {
+    function Task() {
     }
-    TaskRunner.maxConcurrent = 1;
-    return TaskRunner;
+    Task.prototype.submit = function () {
+        var _this = this;
+        var jobQueue = kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](Task.workerConfig.connection);
+        return new Promise(function (resolve, reject) {
+            // this.sharedInstance.jobQueue = kue.createQueue();
+            var job = jobQueue
+                .create(_this.constructor.name, _this.params)
+                .priority('normal')
+                .attempts(1)
+                .backoff(true)
+                .removeOnComplete(false)
+                .delay(0)
+                .save(function (err) {
+                if (err) {
+                    console.log('Error submitting task: ' + JSON.stringify(err));
+                    reject(err);
+                }
+                else {
+                    // console.log('Task submitted.');
+                    resolve(job);
+                }
+            });
+        });
+    };
+    Task.maxConcurrent = 1;
+    return Task;
 }());
 
 

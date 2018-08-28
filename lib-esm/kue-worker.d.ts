@@ -1,6 +1,6 @@
 import * as express from 'express';
 import { Queue } from 'kue';
-import { ITaskRunnerClass } from './task-runner';
+import { ITaskRunnerClass } from './task';
 export interface IKueWorkerConfig {
     connection: {
         redis: string;

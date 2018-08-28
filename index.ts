@@ -1,3 +1,2 @@
 export {KueWorker, IKueWorkerConfig} from './src/kue-worker';
-export {TaskRunner} from './src/task-runner';
-export {TaskLauncher} from './src/task-launcher';
+export {Task} from './src/task';

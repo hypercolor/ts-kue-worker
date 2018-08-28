@@ -23,17 +23,15 @@ export class KueWorker {
 export interface ITaskRunnerClass {
     name: string;
     maxConcurrent: number;
-    deserialize(serializedParams: any): Promise<TaskRunner>;
+    workerConfig: IKueWorkerConfig;
+    deserialize(serializedParams: any): Promise<Task>;
 }
-export abstract class TaskRunner {
+export abstract class Task {
     static maxConcurrent: number;
-    protected job?: Job;
-    abstract run(): Promise<any>;
-}
-
-export abstract class TaskLauncher {
+    static workerConfig: IKueWorkerConfig;
     protected abstract readonly params: any;
-    abstract readonly runner: ITaskRunnerClass;
-    submit(workerConfig: IKueWorkerConfig): Promise<{}>;
+    protected job?: Job;
+    abstract doTaskWork(): Promise<any>;
+    submit(): Promise<{}>;
 }
 

@@ -1,8 +1,8 @@
 import * as express from 'express'
 import * as kue from 'kue'
 import { Queue } from 'kue'
+import { ITaskRunnerClass, Task } from './task'
 import { TaskRouter } from './task-router'
-import { ITaskRunnerClass, TaskRunner } from './task-runner'
 
 export interface IKueWorkerConfig {
   connection: {
@@ -36,15 +36,17 @@ export class KueWorker {
   public registerTask(taskType: ITaskRunnerClass) {
     TaskRouter.registerTask(taskType)
 
+    taskType.workerConfig = this.config
+
     this.jobQueue.process(taskType.name, taskType.maxConcurrent, (job: kue.Job, done: kue.DoneCallback) => {
       const start = new Date().getTime()
 
-      let task: TaskRunner
+      let task: Task
 
       TaskRouter.deserializeTask(job)
         .then(t => {
           task = t
-          return task.run()
+          return task.doTaskWork()
         })
         .then(result => {
           if (result && result.error) {

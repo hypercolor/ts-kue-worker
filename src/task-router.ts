@@ -1,5 +1,5 @@
 import * as kue from 'kue'
-import { ITaskRunnerClass, TaskRunner } from './task-runner'
+import { ITaskRunnerClass, Task } from './task'
 
 export class TaskRouter {
   private static taskTypes: Array<ITaskRunnerClass> = []
@@ -8,7 +8,7 @@ export class TaskRouter {
     this.taskTypes.push(taskType)
   }
 
-  public static deserializeTask(job: kue.Job): Promise<TaskRunner> {
+  public static deserializeTask(job: kue.Job): Promise<Task> {
     if (job.type) {
       for (const taskType of this.taskTypes) {
         if (job.type === taskType.name) {

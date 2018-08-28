@@ -1,19 +1,32 @@
+import { Job } from 'kue'
 import * as kue from 'kue'
 import { IKueWorkerConfig } from './kue-worker'
-import { ITaskRunnerClass } from './task-runner'
 
-export abstract class TaskLauncher {
+export interface ITaskRunnerClass {
+  name: string
+  maxConcurrent: number
+  workerConfig: IKueWorkerConfig
+  deserialize(serializedParams: any): Promise<Task>
+}
+
+export abstract class Task {
+  static maxConcurrent = 1
+
+  static workerConfig: IKueWorkerConfig
+
   protected abstract get params(): any
 
-  public abstract get runner(): ITaskRunnerClass
+  protected job?: Job
 
-  public submit(workerConfig: IKueWorkerConfig) {
-    const jobQueue = kue.createQueue(workerConfig.connection)
+  public abstract doTaskWork(): Promise<any>
+
+  public submit() {
+    const jobQueue = kue.createQueue(Task.workerConfig.connection)
 
     return new Promise((resolve, reject) => {
       // this.sharedInstance.jobQueue = kue.createQueue();
       const job = jobQueue
-        .create(this.runner.name, this.params)
+        .create(this.constructor.name, this.params)
         .priority('normal')
         .attempts(1)
         .backoff(true)

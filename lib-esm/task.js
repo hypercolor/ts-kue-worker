@@ -1,11 +1,11 @@
-import * as kue from 'kue';
-export class TaskLauncher {
-    submit(workerConfig) {
-        const jobQueue = kue.createQueue(workerConfig.connection);
+import * as kue from "kue";
+export class Task {
+    submit() {
+        const jobQueue = kue.createQueue(Task.workerConfig.connection);
         return new Promise((resolve, reject) => {
             // this.sharedInstance.jobQueue = kue.createQueue();
             const job = jobQueue
-                .create(this.runner.name, this.params)
+                .create(this.constructor.name, this.params)
                 .priority('normal')
                 .attempts(1)
                 .backoff(true)
@@ -24,4 +24,5 @@ export class TaskLauncher {
         });
     }
 }
-//# sourceMappingURL=task-launcher.js.map
+Task.maxConcurrent = 1;
+//# sourceMappingURL=task.js.map

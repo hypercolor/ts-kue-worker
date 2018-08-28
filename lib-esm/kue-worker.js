@@ -19,13 +19,14 @@ export class KueWorker {
     }
     registerTask(taskType) {
         TaskRouter.registerTask(taskType);
+        taskType.workerConfig = this.config;
         this.jobQueue.process(taskType.name, taskType.maxConcurrent, (job, done) => {
             const start = new Date().getTime();
             let task;
             TaskRouter.deserializeTask(job)
                 .then(t => {
                 task = t;
-                return task.run();
+                return task.doTaskWork();
             })
                 .then(result => {
                 if (result && result.error) {
