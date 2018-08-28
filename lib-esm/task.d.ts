@@ -1,6 +1,6 @@
 import { Job } from 'kue';
 import { IKueWorkerConfig } from './kue-worker';
-export interface ITaskRunnerClass {
+export interface ITaskClass {
     name: string;
     maxConcurrent: number;
     workerConfig: IKueWorkerConfig;

@@ -14,8 +14,10 @@ export class KueWorker {
             console.error(err.stack);
         });
     }
-    mountBrowserApp(expressApp) {
-        expressApp.use('/kue', kue.app);
+    registerTasks(taskTypes) {
+        taskTypes.forEach(taskType => {
+            this.registerTask(taskType);
+        });
     }
     registerTask(taskType) {
         TaskRouter.registerTask(taskType);

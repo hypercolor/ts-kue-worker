@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /*!******************!*\
   !*** ./index.ts ***!
   \******************/
-/*! exports provided: KueWorker, Task */
+/*! exports provided: KueWorker, Task, KueWorkerSubmitter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -102,7 +102,47 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _src_task__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./src/task */ "./src/task.ts");
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "Task", function() { return _src_task__WEBPACK_IMPORTED_MODULE_1__["Task"]; });
 
+/* harmony import */ var _src_kue_worker_submitter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./src/kue-worker-submitter */ "./src/kue-worker-submitter.ts");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "KueWorkerSubmitter", function() { return _src_kue_worker_submitter__WEBPACK_IMPORTED_MODULE_2__["KueWorkerSubmitter"]; });
 
+
+
+
+
+
+/***/ }),
+
+/***/ "./src/kue-worker-submitter.ts":
+/*!*************************************!*\
+  !*** ./src/kue-worker-submitter.ts ***!
+  \*************************************/
+/*! exports provided: KueWorkerSubmitter */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "KueWorkerSubmitter", function() { return KueWorkerSubmitter; });
+/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! kue */ "kue");
+/* harmony import */ var kue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(kue__WEBPACK_IMPORTED_MODULE_0__);
+
+var KueWorkerSubmitter = /** @class */ (function () {
+    function KueWorkerSubmitter(config) {
+        this.config = config;
+    }
+    KueWorkerSubmitter.getBrowserApp = function () {
+        return kue__WEBPACK_IMPORTED_MODULE_0__["app"];
+    };
+    KueWorkerSubmitter.prototype.registerTasks = function (taskTypes) {
+        var _this = this;
+        taskTypes.forEach(function (taskType) {
+            _this.registerTask(taskType);
+        });
+    };
+    KueWorkerSubmitter.prototype.registerTask = function (taskType) {
+        taskType.workerConfig = this.config;
+    };
+    return KueWorkerSubmitter;
+}());
 
 
 
@@ -137,8 +177,11 @@ var KueWorker = /** @class */ (function () {
             console.error(err.stack);
         });
     }
-    KueWorker.prototype.mountBrowserApp = function (expressApp) {
-        expressApp.use('/kue', kue__WEBPACK_IMPORTED_MODULE_0__["app"]);
+    KueWorker.prototype.registerTasks = function (taskTypes) {
+        var _this = this;
+        taskTypes.forEach(function (taskType) {
+            _this.registerTask(taskType);
+        });
     };
     KueWorker.prototype.registerTask = function (taskType) {
         _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].registerTask(taskType);

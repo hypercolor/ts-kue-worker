@@ -1,7 +1,6 @@
-import * as express from 'express'
 import * as kue from 'kue'
 import { Queue } from 'kue'
-import { ITaskRunnerClass, Task } from './task'
+import { ITaskClass, Task } from './task'
 import { TaskRouter } from './task-router'
 
 export interface IKueWorkerConfig {
@@ -29,11 +28,13 @@ export class KueWorker {
     })
   }
 
-  public mountBrowserApp(expressApp: express.Application) {
-    expressApp.use('/kue', kue.app)
+  public registerTasks(taskTypes: Array<ITaskClass>) {
+    taskTypes.forEach(taskType => {
+      this.registerTask(taskType)
+    })
   }
 
-  public registerTask(taskType: ITaskRunnerClass) {
+  public registerTask(taskType: ITaskClass) {
     TaskRouter.registerTask(taskType)
 
     taskType.workerConfig = this.config
