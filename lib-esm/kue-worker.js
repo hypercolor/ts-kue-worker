@@ -43,14 +43,18 @@ export class KueWorker {
                     }
                     console.log(msg);
                     job.remove();
-                    successCallback(task, result);
+                    if (successCallback) {
+                        successCallback(task, result);
+                    }
                     done();
                 }
             })
                 .catch(err => {
                 console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ', err);
                 job.remove();
-                failCallback(task, err);
+                if (failCallback) {
+                    failCallback(task, err);
+                }
                 done(err);
             });
         });

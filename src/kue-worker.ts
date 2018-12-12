@@ -33,8 +33,8 @@ export class KueWorker {
 
   public registerTasksForProcessing(
     taskTypes: Array<ITaskClass>,
-    successCallback: KueWorkerSuccessfulTaskCallback,
-    failCallback: KueWorkerFailedTaskCallback
+    successCallback?: KueWorkerSuccessfulTaskCallback,
+    failCallback?: KueWorkerFailedTaskCallback
   ) {
     taskTypes.forEach(taskType => {
       this.registerTaskForProcessing(taskType, successCallback, failCallback)
@@ -43,8 +43,8 @@ export class KueWorker {
 
   public registerTaskForProcessing(
     taskType: ITaskClass,
-    successCallback: KueWorkerSuccessfulTaskCallback,
-    failCallback: KueWorkerFailedTaskCallback
+    successCallback?: KueWorkerSuccessfulTaskCallback,
+    failCallback?: KueWorkerFailedTaskCallback
   ) {
     TaskRouter.registerTask(taskType)
 
@@ -73,14 +73,18 @@ export class KueWorker {
             }
             console.log(msg)
             job.remove()
-            successCallback(task, result)
+            if (successCallback) {
+              successCallback(task, result)
+            }
             done()
           }
         })
         .catch(err => {
           console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ', err)
           job.remove()
-          failCallback(task, err)
+          if (failCallback) {
+            failCallback(task, err)
+          }
           done(err)
         })
     })

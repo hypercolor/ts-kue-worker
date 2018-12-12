@@ -11,6 +11,6 @@ export declare class KueWorker {
     config: IKueWorkerConfig;
     jobQueue: Queue;
     constructor(config: IKueWorkerConfig);
-    registerTasksForProcessing(taskTypes: Array<ITaskClass>, successCallback: KueWorkerSuccessfulTaskCallback, failCallback: KueWorkerFailedTaskCallback): void;
-    registerTaskForProcessing(taskType: ITaskClass, successCallback: KueWorkerSuccessfulTaskCallback, failCallback: KueWorkerFailedTaskCallback): void;
+    registerTasksForProcessing(taskTypes: Array<ITaskClass>, successCallback?: KueWorkerSuccessfulTaskCallback, failCallback?: KueWorkerFailedTaskCallback): void;
+    registerTaskForProcessing(taskType: ITaskClass, successCallback?: KueWorkerSuccessfulTaskCallback, failCallback?: KueWorkerFailedTaskCallback): void;
 }
