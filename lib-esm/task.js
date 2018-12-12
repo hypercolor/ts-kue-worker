@@ -7,7 +7,8 @@ export class Task {
         }
         else {
             return new Promise((resolve, reject) => {
-                const job = kue.createQueue(config.connection)
+                const job = kue
+                    .createQueue(config.connection)
                     .create(this.constructor.name, this.serialize())
                     .priority('normal')
                     .attempts(1)

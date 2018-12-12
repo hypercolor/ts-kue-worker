@@ -8,13 +8,13 @@ export class KueWorkerSubmitter {
         kue.createQueue(this.config.connection);
         return kue.app;
     }
-    registerTasks(taskTypes) {
+    registerTasksForSubmitting(taskTypes) {
         taskTypes.forEach(taskType => {
-            this.registerTask(taskType);
+            this.registerTaskForSubmitting(taskType);
         });
         return this;
     }
-    registerTask(taskType) {
+    registerTaskForSubmitting(taskType) {
         taskType.workerConfig = this.config;
         return this;
     }

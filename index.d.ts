@@ -12,12 +12,14 @@ export interface IKueWorkerConfig {
         redis: string;
     };
 }
+export type KueWorkerSuccessfulTaskCallback = (task: Task, result: any) => void;
+export type KueWorkerFailedTaskCallback = (task: Task, error: any) => void;
 export class KueWorker {
     config: IKueWorkerConfig;
     jobQueue: Queue;
     constructor(config: IKueWorkerConfig);
-    registerTasks(taskTypes: Array<ITaskClass>): void;
-    registerTask(taskType: ITaskClass): void;
+    registerTasksForProcessing(taskTypes: Array<ITaskClass>, successCallback: KueWorkerSuccessfulTaskCallback, failCallback: KueWorkerFailedTaskCallback): void;
+    registerTaskForProcessing(taskType: ITaskClass, successCallback: KueWorkerSuccessfulTaskCallback, failCallback: KueWorkerFailedTaskCallback): void;
 }
 
 export interface ITaskClass {
@@ -38,7 +40,7 @@ export abstract class Task {
 export class KueWorkerSubmitter {
     constructor(config: IKueWorkerConfig);
     getBrowserApp(): express.Application;
-    registerTasks(taskTypes: Array<ITaskClass>): this;
-    registerTask(taskType: ITaskClass): this;
+    registerTasksForSubmitting(taskTypes: Array<ITaskClass>): this;
+    registerTaskForSubmitting(taskType: ITaskClass): this;
 }
 

@@ -134,14 +134,14 @@ var KueWorkerSubmitter = /** @class */ (function () {
         kue__WEBPACK_IMPORTED_MODULE_0__["createQueue"](this.config.connection);
         return kue__WEBPACK_IMPORTED_MODULE_0__["app"];
     };
-    KueWorkerSubmitter.prototype.registerTasks = function (taskTypes) {
+    KueWorkerSubmitter.prototype.registerTasksForSubmitting = function (taskTypes) {
         var _this = this;
         taskTypes.forEach(function (taskType) {
-            _this.registerTask(taskType);
+            _this.registerTaskForSubmitting(taskType);
         });
         return this;
     };
-    KueWorkerSubmitter.prototype.registerTask = function (taskType) {
+    KueWorkerSubmitter.prototype.registerTaskForSubmitting = function (taskType) {
         taskType.workerConfig = this.config;
         return this;
     };
@@ -176,18 +176,18 @@ var KueWorker = /** @class */ (function () {
         //   console.info('Queue is ready!');
         // });
         this.jobQueue.on('error', function (err) {
-            console.error('There was an error in the main queue!');
+            console.error('KueWorker: There was an error in the main queue!');
             console.error(err);
             console.error(err.stack);
         });
     }
-    KueWorker.prototype.registerTasks = function (taskTypes) {
+    KueWorker.prototype.registerTasksForProcessing = function (taskTypes, successCallback, failCallback) {
         var _this = this;
         taskTypes.forEach(function (taskType) {
-            _this.registerTask(taskType);
+            _this.registerTaskForProcessing(taskType, successCallback, failCallback);
         });
     };
-    KueWorker.prototype.registerTask = function (taskType) {
+    KueWorker.prototype.registerTaskForProcessing = function (taskType, successCallback, failCallback) {
         _task_router__WEBPACK_IMPORTED_MODULE_1__["TaskRouter"].registerTask(taskType);
         taskType.workerConfig = this.config;
         this.jobQueue.process(taskType.name, taskType.maxConcurrent, function (job, done) {
@@ -211,12 +211,14 @@ var KueWorker = /** @class */ (function () {
                     }
                     console.log(msg);
                     job.remove();
+                    successCallback(task, result);
                     done();
                 }
             })
                 .catch(function (err) {
                 console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ', err);
                 job.remove();
+                failCallback(task, err);
                 done(err);
             });
         });

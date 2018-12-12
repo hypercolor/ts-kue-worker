@@ -9,17 +9,17 @@ export class KueWorker {
         //   console.info('Queue is ready!');
         // });
         this.jobQueue.on('error', function (err) {
-            console.error('There was an error in the main queue!');
+            console.error('KueWorker: There was an error in the main queue!');
             console.error(err);
             console.error(err.stack);
         });
     }
-    registerTasks(taskTypes) {
+    registerTasksForProcessing(taskTypes, successCallback, failCallback) {
         taskTypes.forEach(taskType => {
-            this.registerTask(taskType);
+            this.registerTaskForProcessing(taskType, successCallback, failCallback);
         });
     }
-    registerTask(taskType) {
+    registerTaskForProcessing(taskType, successCallback, failCallback) {
         TaskRouter.registerTask(taskType);
         taskType.workerConfig = this.config;
         this.jobQueue.process(taskType.name, taskType.maxConcurrent, (job, done) => {
@@ -43,12 +43,14 @@ export class KueWorker {
                     }
                     console.log(msg);
                     job.remove();
+                    successCallback(task, result);
                     done();
                 }
             })
                 .catch(err => {
                 console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ', err);
                 job.remove();
+                failCallback(task, err);
                 done(err);
             });
         });

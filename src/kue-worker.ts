@@ -9,6 +9,9 @@ export interface IKueWorkerConfig {
   }
 }
 
+export type KueWorkerSuccessfulTaskCallback = (task: Task, result: any) => void
+export type KueWorkerFailedTaskCallback = (task: Task, error: any) => void
+
 export class KueWorker {
   public jobQueue: Queue
 
@@ -22,19 +25,27 @@ export class KueWorker {
     // });
 
     this.jobQueue.on('error', function(err: Error) {
-      console.error('There was an error in the main queue!')
+      console.error('KueWorker: There was an error in the main queue!')
       console.error(err)
       console.error(err.stack)
     })
   }
 
-  public registerTasks(taskTypes: Array<ITaskClass>) {
+  public registerTasksForProcessing(
+    taskTypes: Array<ITaskClass>,
+    successCallback: KueWorkerSuccessfulTaskCallback,
+    failCallback: KueWorkerFailedTaskCallback
+  ) {
     taskTypes.forEach(taskType => {
-      this.registerTask(taskType)
+      this.registerTaskForProcessing(taskType, successCallback, failCallback)
     })
   }
 
-  public registerTask(taskType: ITaskClass) {
+  public registerTaskForProcessing(
+    taskType: ITaskClass,
+    successCallback: KueWorkerSuccessfulTaskCallback,
+    failCallback: KueWorkerFailedTaskCallback
+  ) {
     TaskRouter.registerTask(taskType)
 
     taskType.workerConfig = this.config
@@ -62,12 +73,14 @@ export class KueWorker {
             }
             console.log(msg)
             job.remove()
+            successCallback(task, result)
             done()
           }
         })
         .catch(err => {
           console.log('Job ' + task.constructor.name + ' (' + job.id + ') error: ', err)
           job.remove()
+          failCallback(task, err)
           done(err)
         })
     })

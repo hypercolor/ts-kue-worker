@@ -13,14 +13,14 @@ export class KueWorkerSubmitter {
     return kue.app
   }
 
-  public registerTasks(taskTypes: Array<ITaskClass>) {
+  public registerTasksForSubmitting(taskTypes: Array<ITaskClass>) {
     taskTypes.forEach(taskType => {
-      this.registerTask(taskType)
+      this.registerTaskForSubmitting(taskType)
     })
     return this
   }
 
-  public registerTask(taskType: ITaskClass) {
+  public registerTaskForSubmitting(taskType: ITaskClass) {
     taskType.workerConfig = this.config
     return this
   }
